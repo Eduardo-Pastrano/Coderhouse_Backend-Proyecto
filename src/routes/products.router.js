@@ -36,7 +36,7 @@ router.get('/:productId', async (req, res) => {
     let productId = req.params.productId;
 
     let product = getProducts.find(p => p.id.toString() === productId);
-    if (!product) return res.status(400).send({status: 'error', error: 'Product not found.' });
+    if (!product) return res.status(400).send({ status: 'error', error: 'Product not found.' });
     res.send(product);
 });
 
@@ -45,9 +45,9 @@ router.put('/:productId', async (req, res) => {
     let productId = req.params.productId;
 
     let productIndex = getProducts.findIndex(p => p.id.toString() === productId);
-    if (productIndex === -1) return res.status(400).send({status: 'error', error: 'Product not found.' });
+    if (productIndex === -1) return res.status(400).send({ status: 'error', error: 'Product not found.' });
 
-    let updatedProduct = {...getProducts[productIndex], ...req.body};
+    let updatedProduct = { ...getProducts[productIndex], ...req.body };
     getProducts[productIndex] = updatedProduct;
 
     await manager.updateProducts(getProducts);
@@ -59,12 +59,12 @@ router.delete('/:productId', async (req, res) => {
     let getProducts = await manager.getProducts();
     let productId = parseInt(req.params.productId);
     let product = getProducts.find(p => p.id === productId);
-    
+
     if (product) {
         manager.deleteProduct(productId)
-        res.send({status: 'Ok', message: 'Product deleted successfully.'})
+        res.send({ status: 'Ok', message: 'Product deleted successfully.' })
     } else {
-        res.status(400).send({status: 'error', error: 'Product not found.'})
+        res.status(400).send({ status: 'error', error: 'Product not found.' })
     }
 });
 

@@ -25,7 +25,7 @@ export default class ProductManager {
         if (products.length === 0) {
             product.id = 1
         } else {
-            product.id = products[products.length].id + 1;
+            product.id = products[products.length - 1].id + 1;
         }
         products.push(product)
 
