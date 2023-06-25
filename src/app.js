@@ -28,15 +28,4 @@ io.on('connection', socket => {
     console.log('New client found.');
 
     socket.emit('products', products);
-
-    /* Chat comunitario */
-    socket.on('message', data => {
-        messages.push(data);
-        io.emit('messageLogs', messages)
-    })
-
-    socket.on('authenticated', data => {
-        socket.broadcast.emit('newUserConnected', data);
-    })
-    /* Chat comunitario */
 });

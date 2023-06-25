@@ -18,12 +18,4 @@ router.get('/realtimeproducts', (req, res) => {
     })
 });
 
-/* Chat comunitario */
-
-router.get('/chatcomunitario', (req, res) => {
-    res.render('chatComunitario', {})
-});
-
-/* Chat comunitario */
-
 export default router;
