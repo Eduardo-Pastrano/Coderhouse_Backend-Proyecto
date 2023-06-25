@@ -10,7 +10,7 @@ import products from "./database/products.json" assert { type: "json" };
 
 const app = express();
 const httpServer = app.listen(8080, () => console.log("It's alive!"));
-const socketServer = new Server(httpServer);
+const io = new Server(httpServer);
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -24,8 +24,19 @@ app.use('/api/carts', cartsRouter)
 app.use('/api/products', productsRouter)
 app.use('/', viewsRouter);
 
-socketServer.on('connection', socket => {
+io.on('connection', socket => {
     console.log('New client found.');
 
     socket.emit('products', products);
+
+    /* Chat comunitario */
+    socket.on('message', data => {
+        messages.push(data);
+        io.emit('messageLogs', messages)
+    })
+
+    socket.on('authenticated', data => {
+        socket.broadcast.emit('newUserConnected', data);
+    })
+    /* Chat comunitario */
 });
