@@ -1,15 +1,23 @@
 import express from 'express';
+import __dirname from './utils.js';
+
+import viewsRouter from './routes/views.router.js';
 import handlebars from 'express-handlebars'; 
-import __dirname from './utils.js'
 import cartsRouter from './routes/carts.router.js';
 import productsRouter from './routes/products.router.js';
-import viewsRouter from './routes/views.router.js';
 import { Server } from 'socket.io';
+
+import mongoose, { mongo } from "mongoose";
 
 import products from "./database/products.json" assert { type: "json" };
 
 const app = express();
-const httpServer = app.listen(8080, () => console.log("It's alive!"));
+const PORT = 8080;
+
+mongoose.set('strictQuery', false)
+const mongoConnect = mongoose.connect('mongodb+srv://epastranom:coder123456@ecommerce.ycqslwp.mongodb.net/?retryWrites=true&w=majority')
+
+const httpServer = app.listen(PORT, () => console.log("It's alive!"));
 const io = new Server(httpServer);
 
 app.use(express.json());
