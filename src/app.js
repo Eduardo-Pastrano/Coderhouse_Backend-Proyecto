@@ -1,15 +1,15 @@
 import express from 'express';
 import __dirname from './utils.js';
 
-import viewsRouter from './routes/views.router.js';
-import handlebars from 'express-handlebars'; 
-import cartsRouter from './routes/carts.router.js';
-import productsRouter from './routes/products.router.js';
+import handlebars from 'express-handlebars';
 import { Server } from 'socket.io';
-
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 import products from "./database/products.json" assert { type: "json" };
+
+import viewsRouter from './routes/views.router.js';
+import cartsRouter from './routes/carts.router.js';
+import productsRouter from './routes/products.router.js';
 
 const app = express();
 const PORT = 8080;

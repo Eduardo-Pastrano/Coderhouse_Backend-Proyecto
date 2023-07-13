@@ -18,4 +18,11 @@ router.get('/realtimeproducts', (req, res) => {
     })
 });
 
+// router.get('/chat', (req, res) => {
+//     res.render('chat', {
+//         style: 'index.css',
+//         title: 'Community Chat'
+//     })
+// });
+
 export default router;

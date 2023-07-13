@@ -1,8 +1,8 @@
 import { Router } from "express";
-import ProductManager from "../services/ProductManager.js";
+import Products from "../dao/dbManagers/products.js"
 
 const router = Router();
-const manager = new ProductManager();
+const manager = new Products();
 
 router.get('/', async (req, res) => {
     let getProducts = await manager.getProducts();
@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
     if (!limit) return res.send({ getProducts });
 
     let products = getProducts.slice(0, limit);
-    res.send(products);
+    res.send({ status: "Ok", payload: products});
 });
 
 router.post('/', async (req, res) => {
@@ -57,7 +57,7 @@ router.put('/:productId', async (req, res) => {
 
 router.delete('/:productId', async (req, res) => {
     let getProducts = await manager.getProducts();
-    let productId = parseInt(req.params.productId);
+    let productId = req.params.productId;
     let product = getProducts.find(p => p.id === productId);
 
     if (product) {
