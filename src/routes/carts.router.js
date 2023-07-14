@@ -15,8 +15,8 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    let carts = await cartManager.addCart();
-    res.send({ status: 'Ok', payload: carts})
+    let carts = await cartManager.addCarts();
+    res.send({ status: 'Ok', payload: `Cart created succesfully: ${carts}`})
 });
 
 router.get('/:cartId', async (req, res) => {
@@ -29,11 +29,13 @@ router.get('/:cartId', async (req, res) => {
 });
 
 router.post("/:cartId/product/:productId", async (req, res) => {
-    let cartId = parseInt(req.params.cartId);
-    let productId = parseInt(req.params.productId);
-    const products = await cartManager.addProductToCart(cartId, productId);
-
-    res.send({ status: 'Ok', payload: `Product successfully added to cart with id: ${cartId}.`})
+    const { cartId, productId } = req.params;
+    try {
+        await cartManager.addProductToCart(cartId, productId);
+        res.send({ status: 'Ok', payload: `Product successfully added to cart with id: ${cartId}.`})
+    } catch (error) {
+        res.status(400).send({ status: 'error', error: `An error occurred while adding the product to the cart with ID:${cartId}` })
+    }
 });
 
 export default router;

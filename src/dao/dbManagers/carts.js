@@ -1,5 +1,4 @@
-import { cartModel } from "../models/carts.js";
-import { productModel } from "../models/products.js"
+import { cartModel } from "../models/carts.model.js";
 
 export default class Carts {
     constructor() {
@@ -11,31 +10,23 @@ export default class Carts {
         return carts
     }
 
-    async addCarts(cart) {
-        let newCart = await cartModel.create(cart);
+    async addCarts() {
+        let newCart = await cartModel.create({ products: [] });
         return newCart
     }
 
     async addProductToCart(cartId, productId) {
-        let cart = await cartModel.findById(cartId);
+        const cart = await cartModel.findOne({ _id: cartId });
         if (cart) {
-            const product = await productModel.findById(productId);
-
+            const product = cart.products.find(product => product.id === productId);
             if (!product) {
-                cart.products.push({ product: productId, quantity: 1 });
+                cart.products.push({ id: productId, quantity: 1 });
             } else {
-                const existingProductIndex = cart.products.findIndex(
-                    (p) => p.product.toString() === productId.toString()
-                );
-                if (existingProductIndex >= 0) {
-                    cart.products[existingProductIndex].quantity += 1;
-                } else {
-                    cart.products.push({ product: productId, quantity: 1 });
-                }
+                product.quantity += 1;
             }
             await cart.save();
         } else {
-            console.log('Cart not found.');
+            console.log("Cart not found.")
         }
     }
 }

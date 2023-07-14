@@ -32,8 +32,24 @@ app.use('/api/carts', cartsRouter)
 app.use('/api/products', productsRouter)
 app.use('/', viewsRouter);
 
+import { messageModel } from "./dao/models/messages.model.js"
+let messages = [];
+
 io.on('connection', socket => {
     console.log('New client found.');
 
     socket.emit('products', products);
+
+    socket.on('message', data => {
+        messages.push(data);
+        io.emit('messagesLogs', messages);
+        messageModel.create({
+            user: data.user,
+            message: data.message
+        });
+    });
+
+    socket.on('authenticated', data => {
+        socket.broadcast.emit('newUserConnected', data);
+    });
 });

@@ -47,7 +47,6 @@ export default class CartManager {
             } else {
                 product.quantity += 1;
             }
-
             const updatedCartProduct = carts.findIndex(cart => cart.id === cartId);
             carts[updatedCartProduct] = cart;
             await fs.promises.writeFile(archivo, JSON.stringify(carts, null, `\t`))
