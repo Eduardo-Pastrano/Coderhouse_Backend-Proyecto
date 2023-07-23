@@ -1,14 +1,31 @@
-<h1>Products available</h1>
+<h1>Our list of products🔥💥</h1>
+
 <div>
-    {{#each products}}
-        <div>
-            <h2>{{this.title}}</h2>
-            <p>Description: {{this.description}}</p>
-            <p>Price: ${{this.price}}</p>
-            <p>Stock: {{this.stock}}</p>
-        </div>
+    {{#each payload}}
+    <div>
+        <h2>{{this.title}}</h2>
+        <p>Category: {{capitalize this.category}}</p>
+        <p>Description: {{this.description}}</p>
+        <p>Price: ${{this.price}}</p>
+        <p>Stock: {{this.stock}}</p>
+        <p>Available: {{this.status}}</p>
+    </div>
     {{/each}}
+
+    {{#if hasPrevPage}}
+    <a href="/?limit={{limit}}&page={{prevPage}}&sort={{sort}}&category={{category}}"><button>⬅ Previous</button></a>
+    {{/if}}
+
+    {{#if hasNextPage}}
+    <a href="/?limit={{limit}}&page={{nextPage}}&sort={{sort}}&category={{category}}"><button>Next ➡</button></a>
+    {{/if}}
+
+    <div>
+        <button>Add to cart</button>
+    </div>
+
 </div>
+
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/index.js"></script>
