@@ -25,7 +25,7 @@ router.post('/', async (req, res) => {
         !product.status ||
         !product.stock ||
         !product.category) {
-        return res.status(400).send({ status: 'error', error: 'Please, make sure all of the fileds are filled.' });
+        return res.status(400).send({ status: 'error', error: 'Please, make sure all of the fields are completed.' });
     }
 
     res.send({ status: 'Ok', message: 'Product created.' })

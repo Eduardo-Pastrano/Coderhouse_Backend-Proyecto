@@ -1,4 +1,6 @@
 import express from 'express';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 import __dirname from './utils.js';
 
 import handlebars from 'express-handlebars';
@@ -8,15 +10,26 @@ import mongoose from "mongoose";
 import viewsRouter from './routes/views.router.js';
 import cartsRouter from './routes/carts.router.js';
 import productsRouter from './routes/products.router.js';
+import sessionsRouter from './routes/sessions.router.js';
 
 const app = express();
 const PORT = 8080;
 
 const environment = async () => {
     mongoose.set('strictQuery', false)
-    await mongoose.connect('mongodb+srv://epastranom:coder123456@ecommerce.ycqslwp.mongodb.net/ecommerceVzla?retryWrites=true&w=majority')
+    await mongoose.connect('mongodb+srv://epastranom:coder123456@ecommerce.ycqslwp.mongodb.net/ecommerceVzla?retryWrites=true&w=majority');
 }
 environment();
+
+app.use(session({
+    store: MongoStore.create({
+        mongoUrl: 'mongodb+srv://epastranom:150996@pruebacoderhouse.0kezqsj.mongodb.net/Clase-19?retryWrites=true&w=majority',
+        mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
+    }),
+    secret: '3DV4RD0#P4$TR4N0',
+    resave: false,
+    saveUninitialized: false
+}));
 
 const httpServer = app.listen(PORT, () => console.log("It's alive!"));
 const io = new Server(httpServer);
@@ -37,8 +50,9 @@ app.set('views', __dirname + '/views');
 app.use(express.static(__dirname + '/public'));
 
 app.use('/', viewsRouter);
-app.use('/api/carts', cartsRouter)
-app.use('/api/products', productsRouter)
+app.use('/api/carts', cartsRouter);
+app.use('/api/products', productsRouter);
+app.use('/api/sessions', sessionsRouter);
 
 import { messageModel } from "./dao/models/messages.model.js"
 let messages = [];

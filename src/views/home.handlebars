@@ -1,9 +1,11 @@
-<h1>Our list of products🔥💥</h1>
+<button><a href="/profile">Your profile</a></button> <a href="/logout"><button>Logout</button></a>
+<h1>Welcome {{user.name}}. Your role is: {{capitalize user.role}}</h1>
+<h2>Our list of products🔥💥</h2>
 
 <div>
     {{#each payload}}
     <div>
-        <h2>{{this.title}}</h2>
+        <h3>{{this.title}}</h3>
         <p>Category: {{capitalize this.category}}</p>
         <p>Description: {{this.description}}</p>
         <p>Price: ${{this.price}}</p>
@@ -19,7 +21,7 @@
     {{#if hasNextPage}}
     <a href="/?limit={{limit}}&page={{nextPage}}&sort={{sort}}&category={{category}}"><button>Next ➡</button></a>
     {{/if}}
-
+    <br><br>
     <div>
         <button>Add to cart</button>
     </div>

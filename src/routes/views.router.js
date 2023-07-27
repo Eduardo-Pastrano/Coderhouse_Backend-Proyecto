@@ -1,9 +1,17 @@
 import { Router } from "express";
 import { productModel } from "../dao/models/products.model.js";
 
-const router = Router();
+const views = Router();
 
-router.get('/', async (req, res) => {
+const userLogged = (req, res, next) => {
+    if (!req.session.user) {
+        res.redirect('/login');
+    } else {
+        next();
+    }
+}
+
+views.get('/', userLogged, async (req, res) => {
     let { page, sort, category, limit } = req.query;
     let sortDirection;
 
@@ -34,7 +42,7 @@ router.get('/', async (req, res) => {
     const { docs, hasPrevPage, hasNextPage, nextPage, prevPage, totalPages } = await productModel.paginate(queryObject, { page, limit, sort: sortOptions, lean: true });
 
     const products = docs;
-    res.status(200).render('index', {
+    res.status(200).render('home', {
         status: 'success',
         payload: products,
         page: page,
@@ -47,22 +55,44 @@ router.get('/', async (req, res) => {
         nextPage,
         prevPage,
         style: 'index.css',
-        title: 'Products🛒'
+        title: 'Products🛒',
+        user: req.session.user
     });
 });
 
-router.get('/realtimeproducts', (req, res) => {
+views.get('/register', async (req, res) => {
+    res.render('register');
+});
+
+views.get('/login', async (req, res) => {
+    res.render('login');
+});
+
+views.get('/profile', userLogged, async (req, res) => {
+    res.render('profile', {
+        user: req.session.user,
+    });
+});
+
+views.get('/logout', async (req, res) => {
+    req.session.destroy(error => {
+        if (!error) res.render('login');
+        else res.send({ status: 'Logout ERROR', body: error });
+    })
+})
+
+views.get('/realtimeproducts', userLogged, async (req, res) => {
     res.render('realTimeProducts', {
         style: 'index.css',
         title: 'Real Time Products',
     })
 });
 
-router.get('/chat', (req, res) => {
+views.get('/chat', (req, res) => {
     res.render('chat', {
         style: 'index.css',
         title: 'Community Chat'
     })
 });
 
-export default router;
+export default views;
