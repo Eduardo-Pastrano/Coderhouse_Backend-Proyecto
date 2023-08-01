@@ -1,5 +1,4 @@
 <div>
-    {{#if user}}
     <h1>Your profile😎</h1>
     <p>Name: {{user.name}}</p>
     <p>Role: {{capitalize user.role}}</p>
@@ -8,12 +7,4 @@
     <a href="/"><button>Home</button></a>
     <br><br>
     <a href="/logout"><button>Logout</button></a>
-    {{else}}
-    <h1>You are not logged in 🤔</h1>
-    <a href="/login"><button>Login</button></a>
-    <br><br>
-    <a href="/register"><button>Register</button></a>
-    <br><br>
-    <a href="/"><button>Home</button></a>
-    {{/if}}
 </div>

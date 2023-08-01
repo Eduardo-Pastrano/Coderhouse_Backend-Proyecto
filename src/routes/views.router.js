@@ -79,7 +79,11 @@ views.get('/logout', async (req, res) => {
         if (!error) res.render('login');
         else res.send({ status: 'Logout ERROR', body: error });
     })
-})
+});
+
+views.get('/resetpassword', async (req, res) => {
+    res.render('resetPassword');
+});
 
 views.get('/realtimeproducts', userLogged, async (req, res) => {
     res.render('realTimeProducts', {
