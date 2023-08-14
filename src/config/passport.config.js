@@ -21,7 +21,9 @@ const initializePassport = () => {
                     last_name,
                     email,
                     age,
-                    password: createHash(userPassword)
+                    password: createHash(userPassword),
+                    cart: null,
+                    role: 'user'
                 }
                 let result = await userModel.create(newUser);
                 return done(null, result);
@@ -44,7 +46,9 @@ const initializePassport = () => {
                     last_name: '',
                     email: profile._json.email,
                     age: 26,
-                    password: ''
+                    password: '',
+                    cart: null,
+                    role: 'user'
                 }
                 console.log(newUser);
                 let result = await userModel.create(newUser);

@@ -15,7 +15,7 @@ sessions.get('/failedregister', async (req, res) => {
     res.send({ error: 'failed' })
 });
 
-// Ruta para realizar el login de un usuario, si al hacer el login, ingresa con el email: adminCoder@coder.com y password: adminCod3r123, se le da un rol de admin, sino, es un user.
+// Ruta para realizar el login de un usuario
 sessions.post('/login', passport.authenticate('login', { failureRedirect: '/failedlogin' }), async (req, res) => {
     if (!req.user) return res.status(400).send({ status: 'Error', Error: 'Invalid email and/or password.' })
 
@@ -57,6 +57,15 @@ sessions.post('/resetpassword', async (req, res) => {
     const newPassword = createHash(password);
     await userModel.updateOne({ _id: user._id }, { $set: { password: newPassword } });
     res.send({ status: 'Success', payload: user, message: 'Password restored successfully.' })
+});
+
+/* Ruta para verificar si hay algun usuario autenticado o no */
+sessions.get('/current', async (req, res) => {
+    if (req.isAuthenticated()) {
+        res.json(req.user);
+    } else {
+        res.status(401).json({ error: 'There is no user authenticated.' });
+    }
 });
 
 export default sessions;
