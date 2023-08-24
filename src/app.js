@@ -23,6 +23,7 @@ const hbs = handlebars.create({
         capitalize: (string) => string.charAt(0).toUpperCase() + string.slice(1)
     }
 });
+// Capitalize
 
 const environment = async () => {
     mongoose.set('strictQuery', false)
