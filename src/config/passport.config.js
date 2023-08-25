@@ -64,6 +64,9 @@ const initializePassport = () => {
     passport.use('login', new LocalStrategy({ passReqToCallback: true, usernameField: 'email' }, async (req, username, password, done) => {
         try {
             let role = 'user';
+            if (username === `${config.admin_email}` && password === `${config.admin_password}`) {
+                role = 'admin'
+            }
             const user = await userModel.findOne({ email: username })
             if (!user) {
                 console.log("User doesn't exist.")

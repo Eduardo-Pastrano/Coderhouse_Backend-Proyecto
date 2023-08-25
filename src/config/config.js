@@ -3,6 +3,8 @@ dotenv.config();
 
 export default {
     port: process.env.PORT,
+    admin_email: process.env.ADMIN_EMAIL,
+    admin_password: process.env.ADMIN_PASSWORD,
     db_name: process.env.DB_NAME,
     mongo_user: process.env.MONGO_USER,
     mongo_pass: process.env.MONGO_PASS,
