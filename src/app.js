@@ -2,6 +2,7 @@ import express from 'express';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import passport from "passport";
+import config from './config/config.js';
 
 import handlebars from 'express-handlebars';
 import { Server } from 'socket.io';
@@ -15,7 +16,6 @@ import sessionsRouter from './routes/sessions.router.js';
 import initializePassport from './config/passport.config.js';
 
 const app = express();
-const PORT = 8080;
 
 // Capitalize
 const hbs = handlebars.create({
@@ -27,17 +27,17 @@ const hbs = handlebars.create({
 
 const environment = async () => {
     mongoose.set('strictQuery', false)
-    await mongoose.connect('mongodb+srv://epastranom:coder123456@ecommerce.ycqslwp.mongodb.net/ecommerceVzla?retryWrites=true&w=majority');
+    await mongoose.connect(`mongodb+srv://${config.mongo_user}:${config.mongo_pass}@ecommerce.ycqslwp.mongodb.net/${config.db_name}?retryWrites=true&w=majority`);
 }
 environment();
 initializePassport();
 
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: 'mongodb+srv://epastranom:150996@pruebacoderhouse.0kezqsj.mongodb.net/Clase-19?retryWrites=true&w=majority',
+        mongoUrl: `mongodb+srv://${config.mongo_user}:${config.mongo_pass}@ecommerce.ycqslwp.mongodb.net/${config.db_name}?retryWrites=true&w=majority`,
         mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
     }),
-    secret: '3DV4RD0#P4$TR4N0',
+    secret: config.secret_key,
     resave: false,
     saveUninitialized: false
 }));
@@ -45,7 +45,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-const httpServer = app.listen(PORT, () => console.log("It's alive!"));
+const httpServer = app.listen(8080, () => console.log("It's alive!"));
 const io = new Server(httpServer);
 
 app.use(express.json());
@@ -80,3 +80,4 @@ io.on('connection', async socket => {
         socket.broadcast.emit('newUserConnected', data);
     });
 });
+
