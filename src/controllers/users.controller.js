@@ -1,6 +1,6 @@
 import passport from "passport";
-import { userModel } from "../models/users.model.js";
-import { createHash } from "../../utils.js";
+import { userModel } from "../dao/models/users.model.js";
+import { createHash } from "../utils.js";
 
 class UsersController {
     register(req, res, next) {

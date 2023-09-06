@@ -69,7 +69,7 @@ const initializePassport = () => {
             }
             const user = await userModel.findOne({ email: username })
             if (!user) {
-                console.log("User doesn't exist.")
+                console.log("Invalid email and/or password.")
                 return done(null, false);
             }
             if (!isValidPassword(user, password)) return done(null, false);

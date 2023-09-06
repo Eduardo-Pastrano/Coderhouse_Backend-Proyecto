@@ -1,5 +1,5 @@
 import { Router } from "express";
-import ProductsController from "../dao/controllers/products.controller.js";
+import ProductsController from "../controllers/products.controller.js";
 
 class productsRouter {
     constructor() {
@@ -7,7 +7,7 @@ class productsRouter {
         this.products.get('/', ProductsController.getProducts);
         this.products.get('/:productId', ProductsController.getProductById);
         this.products.post('/', ProductsController.addProduct);
-        this.products.put('/:productId', ProductsController.updateProducts);
+        this.products.put('/:productId', ProductsController.updateProduct);
         this.products.delete('/:productId', ProductsController.deleteProduct);
     }
 }

@@ -27,14 +27,14 @@ const hbs = handlebars.create({
 
 const environment = async () => {
     mongoose.set('strictQuery', false)
-    await mongoose.connect(`mongodb+srv://${config.mongo_user}:${config.mongo_pass}@ecommerce.ycqslwp.mongodb.net/${config.db_name}?retryWrites=true&w=majority`);
+    await mongoose.connect(config.mongo_url);
 }
 environment();
 initializePassport();
 
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: `mongodb+srv://${config.mongo_user}:${config.mongo_pass}@ecommerce.ycqslwp.mongodb.net/${config.db_name}?retryWrites=true&w=majority`,
+        mongoUrl: config.mongo_url,
         mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
     }),
     secret: config.secret_key,
@@ -45,7 +45,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-const httpServer = app.listen(8080, () => console.log("It's alive!"));
+const httpServer = app.listen(config.port, () => console.log("It's alive!"));
 const io = new Server(httpServer);
 
 app.use(express.json());
@@ -80,4 +80,3 @@ io.on('connection', async socket => {
         socket.broadcast.emit('newUserConnected', data);
     });
 });
-

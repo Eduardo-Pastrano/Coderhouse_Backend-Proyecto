@@ -1,5 +1,5 @@
 import { Router } from "express";
-import usersController from "../dao/controllers/users.controller.js";
+import usersController from "../controllers/users.controller.js";
 
 class sessionsRouter {
     constructor() {

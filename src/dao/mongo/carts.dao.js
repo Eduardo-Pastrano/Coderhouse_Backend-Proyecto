@@ -1,8 +1,8 @@
 import { cartModel } from "../models/carts.model.js";
 
-export default class Carts {
+export default class CartsDao {
     constructor() {
-        console.log("Connected: MongoDB - Carts")
+        console.log("Connected: DAO - Carts")
     }
 
     async getCarts() {
@@ -85,4 +85,22 @@ export default class Carts {
             console.log("Cart not found.")
         }
     }
+
+    async deleteCart(cartId) {
+        await cartModel.deleteOne({ _id: cartId });
+    }
 }
+
+/* Documentation */
+
+// getCarts para obtener todos los carritos, o limitar la cantidad de los mismos si se desea.
+// getCartById para obtener los productos de un carrito especificado por id.
+// addCarts para agregar un carrito con un arreglo de productos vacio.
+// addProductToCart para agregar un producto de la collections products al carrito especificado por id.
+// deleteProductFromCart para eliminar un producto del carrito especificado por id.
+// emptyCart para eliminar los productos de un carrito especificado por id y dejarlo vacio.
+// updateCartProducts para actualizar los productos de un carrito especificado por id.
+// updateProductQuantity para actualizar solo la cantidad de un producto en un carrito especificado por id.
+// deleteCart para eliminar un carrito por completo, especificado por id.
+
+/* Documentation */
