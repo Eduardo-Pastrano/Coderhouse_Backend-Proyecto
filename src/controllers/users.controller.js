@@ -1,5 +1,6 @@
 import passport from "passport";
-import { userModel } from "../dao/models/users.model.js";
+import UserDao from "../dao/mongo/users.dao.js";
+import UserDto from "../dao/dto/users.dto.js";
 import { createHash } from "../utils.js";
 
 class UsersController {
@@ -53,16 +54,17 @@ class UsersController {
     }
 
     failedLogin(req, res) {
-        res.send({ 
-            status: 'Error', 
-            Error: 'Failed login strategy.' 
+        res.send({
+            status: 'Error',
+            Error: 'Failed login strategy.'
         })(req, res);
     }
 
     github(req, res) {
-        passport.authenticate('github', { 
-            scope: ['user: email'] }, () => { 
-            })(req, res);
+        passport.authenticate('github', {
+            scope: ['user: email']
+        }, () => {
+        })(req, res);
     }
 
     githubCallback(req, res) {
@@ -93,17 +95,22 @@ class UsersController {
     async resetPassword(req, res) {
         const { email, password } = req.body;
         if (!email || !password) return res.status(400).send({ status: 'Error', Error: 'Incomplete values.' });
-        const user = await userModel.findOne({ email });
-
-        if (!user) return res.status({ status: 'Error', Error: 'User not found' });
-        const newPassword = createHash(password);
-        await userModel.updateOne({ _id: user._id }, { $set: { password: newPassword } });
-        res.send({ status: 'Success', payload: user, message: 'Password restored successfully.' })
+        try {
+            const user = await UserDao.getUserByEmail(email);
+            if (!user) return res.status({ status: 'Error', Error: 'User not found' });
+            const newPassword = createHash(password);
+            await UserDao.updateUser(user._id, { password: newPassword });
+            res.send({ status: 'Success', message: 'Password restored successfully.' })
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({ status: 'Error', Error: error.message });
+        }
     }
 
     currentUser(req, res) {
         if (req.isAuthenticated()) {
-            res.json(req.user);
+            const userDto = new UserDto(req.user);
+            res.json(userDto)
         } else {
             res.status(401).json({ error: 'There is no user authenticated.' });
         }

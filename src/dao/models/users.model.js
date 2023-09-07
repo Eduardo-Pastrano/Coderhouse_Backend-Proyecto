@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const { Schema } = mongoose;
-
 const userCollection = 'users';
 const userSchema = new mongoose.Schema({
     first_name: String,
@@ -13,7 +12,7 @@ const userSchema = new mongoose.Schema({
     age: Number,
     password: String,
     cart: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.SchemaTypes.ObjectId,
         ref: 'carts'
     },
     role: {

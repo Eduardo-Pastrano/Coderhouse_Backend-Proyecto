@@ -1,15 +1,9 @@
 import { Router } from "express";
 import { productModel } from "../dao/models/products.model.js";
+import { userLogged } from "../middleware/userLogged.js";
+import { userOnly } from "../middleware/userOnly.js";
 
 const views = Router();
-
-const userLogged = (req, res, next) => {
-    if (!req.session.user) {
-        res.redirect('/login');
-    } else {
-        next();
-    }
-}
 
 views.get('/', userLogged, async (req, res) => {
     let { page, sort, category, limit } = req.query;
@@ -74,7 +68,7 @@ views.get('/profile', userLogged, async (req, res) => {
     });
 });
 
-views.get('/current', async (req, res) => {
+views.get('/current', userLogged, async (req, res) => {
     res.render('current', {
         user: req.session.user,
     });
@@ -98,7 +92,7 @@ views.get('/realtimeproducts', userLogged, async (req, res) => {
     })
 });
 
-views.get('/chat', (req, res) => {
+views.get('/chat', userOnly, (req, res) => {
     res.render('chat', {
         style: 'index.css',
         title: 'Community Chat'

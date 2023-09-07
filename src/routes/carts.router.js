@@ -1,5 +1,7 @@
 import { Router } from "express";
 import CartsController from "../controllers/carts.controller.js";
+import TicketsController from "../controllers/tickets.controller.js";
+import { userOnly } from "../middleware/userOnly.js";
 
 class cartsRouter {
     constructor() {
@@ -10,9 +12,10 @@ class cartsRouter {
         this.carts.delete('/:cartId', CartsController.deleteCart)
         this.carts.delete('/:cartId/empty', CartsController.emptyCart);
         this.carts.put('/:cartId', CartsController.updateCartProducts);
-        this.carts.put("/:cartId/products/:productId", CartsController.updateProductQuantity);
-        this.carts.post("/:cartId/products/:productId", CartsController.addProductToCart);
-        this.carts.delete('/:cartId/products/:productId', CartsController.deleteProductFromCart);
+        this.carts.put("/:cartId/products/:productId", userOnly, CartsController.updateProductQuantity);
+        this.carts.post("/:cartId/products/:productId", userOnly, CartsController.addProductToCart);
+        this.carts.delete('/:cartId/products/:productId', userOnly, CartsController.deleteProductFromCart);
+        this.carts.post('/:cartId/purchase', userOnly, TicketsController.createTicket);
     }
 }
 
@@ -26,8 +29,8 @@ export default new cartsRouter().carts;
 // Ruta delete '/:cartId/empty' para eliminar los productos de un carrito especificado por id.
 // Ruta delete '/:cartId' para eliminar un carrito por completo, especificado por id.
 // Ruta put '/:cartId' para actualizar los productos de un carrito especificado por id.
-// Ruta put '/:cartId/products/:productId' para actualizar solo la cantidad de un producto en un carrito especificado por id.
-// Ruta post '/:cartId/products/:productId' para agregar un producto de la collections products al carrito especificado por id.
-// Ruta delete '/:cartId/products/:productId' para eliminar un producto del carrito especificado por id.
+// Ruta put '/:cartId/products/:productId' para actualizar solo la cantidad de un producto en un carrito especificado por id, solo un usuario puede hacerlo.
+// Ruta post '/:cartId/products/:productId' para agregar un producto de la collections products al carrito especificado por id, solo un usuario puede hacerlo.
+// Ruta delete '/:cartId/products/:productId' para eliminar un producto del carrito especificado por id solo un usuario puede hacerlo.
 
 /* Documentation */

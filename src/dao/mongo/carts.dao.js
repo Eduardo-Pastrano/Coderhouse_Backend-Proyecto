@@ -1,4 +1,5 @@
 import { cartModel } from "../models/carts.model.js";
+import { productModel } from "../models/products.model.js";
 
 export default class CartsDao {
     constructor() {
@@ -24,13 +25,24 @@ export default class CartsDao {
     async addProductToCart(cartId, productId) {
         const cart = await cartModel.findOne({ _id: cartId });
         if (cart) {
-            const product = cart.products.find(product => product.id === productId);
-            if (!product) {
-                cart.products.push({ id: productId, quantity: 1 });
+            const product = await productModel.findOne({ _id: productId });
+            if (product && product.stock > 0) {
+                const cartProduct = cart.products.find(product => product.id === productId);
+                if (!cartProduct) {
+                    cart.products.push({ id: productId, quantity: 1 });
+                    product.stock -= 1;
+                    await product.save();
+                } else if (cartProduct.quantity < product.stock) {
+                    cartProduct.quantity += 1;
+                    product.stock -= 1;
+                    await product.save();
+                } else {
+                    console.log("There is not enough stock to add more of this product to the cart at the moment.")
+                }
+                await cart.save();
             } else {
-                product.quantity += 1;
+                console.log("The product is out of stock or does not exist.")
             }
-            await cart.save();
         } else {
             console.log("Cart not found.")
         }

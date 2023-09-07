@@ -2,7 +2,8 @@ import passport from "passport";
 import local from "passport-local";
 import GitHubStrategy from "passport-github2";
 import config from './config.js';
-import { userModel } from '../dao/models/users.model.js';
+import UserDao from "../dao/mongo/users.dao.js";
+import { cartModel } from "../dao/models/carts.model.js";
 import { createHash, isValidPassword } from "../utils.js";
 
 const LocalStrategy = local.Strategy;
@@ -11,22 +12,25 @@ const initializePassport = () => {
     passport.use('register', new LocalStrategy(
         { passReqToCallback: true, usernameField: 'email' }, async (req, username, userPassword, done) => {
             try {
-                let user = await userModel.findOne({ email: username });
+                let user = await UserDao.getUserByEmail(username);
                 if (user) {
                     console.log('User already exists.')
                     return done(null, false, { message: 'User already exits.' });
                 }
                 const { first_name, last_name, email, age } = req.body;
+
+                const newCart = await cartModel.create({ products: [] });
+
                 const newUser = {
                     first_name,
                     last_name,
                     email,
                     age,
                     password: createHash(userPassword),
-                    cart: null,
+                    cart: newCart._id,
                     role: 'user'
                 }
-                let result = await userModel.create(newUser);
+                let result = await UserDao.createUser(newUser);
                 return done(null, result);
             } catch (error) {
                 return done('There was an error trying to get the user: ' + error);
@@ -40,18 +44,19 @@ const initializePassport = () => {
         callbackURL: config.github_callback_url,
     }, async (accessToken, refreshToken, profile, done) => {
         try {
-            let user = await userModel.findOne({ email: profile._json.email });
+            let user = await UserDao.getUserByEmail({ email: profile._json.email });
+            const newCart = await cartModel.create({ products: [] });
             if (!user) {
                 let newUser = {
                     first_name: profile._json.name,
                     last_name: '',
                     email: profile._json.email,
-                    age: 26,
+                    age: '',
                     password: '',
-                    cart: null,
+                    cart: newCart._id,
                     role: 'user'
                 }
-                let result = await userModel.create(newUser);
+                let result = await UserDao.createUser(newUser);
                 return done(null, result);
             } else {
                 return done(null, user);
@@ -67,7 +72,7 @@ const initializePassport = () => {
             if (username === `${config.admin_email}` && password === `${config.admin_password}`) {
                 role = 'admin'
             }
-            const user = await userModel.findOne({ email: username })
+            const user = await UserDao.getUserByEmail(username)
             if (!user) {
                 console.log("Invalid email and/or password.")
                 return done(null, false);
@@ -85,7 +90,7 @@ const initializePassport = () => {
     });
 
     passport.deserializeUser(async (id, done) => {
-        let user = await userModel.findById(id);
+        let user = await UserDao.getUserById(id);
         done(null, user);
     });
 }

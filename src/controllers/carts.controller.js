@@ -95,6 +95,8 @@ class CartsController {
     }
 }
 
+export default new CartsController();
+
 /* Documentation */
 
 // getCarts para obtener todos los carritos, o limitar la cantidad de los mismos si se desea.
@@ -108,5 +110,3 @@ class CartsController {
 // deleteCart para eliminar un carrito por completo, especificado por id.
 
 /* Documentation */
-
-export default new CartsController();
