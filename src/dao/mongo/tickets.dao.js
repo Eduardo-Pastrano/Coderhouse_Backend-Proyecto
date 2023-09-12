@@ -7,10 +7,41 @@ export default class TicketsDao {
 
     async createTicket(ticket) {
         try {
-            let newTicket = await ticketModel.create(ticket);
+            const newTicket = await ticketModel.create(ticket);
             return newTicket;
         } catch (error) {
-            throw new Error('There was an unexpected error while creating the ticket of purchase.')
+            console.log('There was an error creating the ticket: ', error);
+            throw error;
+        }
+    }
+
+    async getTickets() {
+        try {
+            let tickets = await ticketModel.find();
+            return tickets
+        } catch (error) {
+            console.log('There was an error trying to get the tickets:', error);
+            throw error;
+        }
+    }
+
+    async getTicketById(id) {
+        try {
+            let ticket = await ticketModel.findById({ _id: id });
+            return ticket
+        } catch (error) {
+            console.log('There was an error trying to get the ticket with the specified id:', error)
+            throw error;
+        }
+    }
+
+    async getTicketsByUserId(userId) {
+        try {
+            const tickets = await ticketModel.find({ user: userId });
+            return tickets;
+        } catch (error) {
+            onsole.log('There was an error trying to get the ticket for the specified user:', error)
+            throw error;
         }
     }
 }

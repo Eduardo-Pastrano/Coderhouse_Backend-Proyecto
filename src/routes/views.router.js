@@ -2,7 +2,9 @@ import { Router } from "express";
 import { productModel } from "../dao/models/products.model.js";
 import { userLogged } from "../middleware/userLogged.js";
 import { userOnly } from "../middleware/userOnly.js";
+import TicketsDao from "../dao/mongo/tickets.dao.js";
 
+const ticketsDao = new TicketsDao();
 const views = Router();
 
 views.get('/', userLogged, async (req, res) => {
@@ -98,5 +100,44 @@ views.get('/chat', userOnly, (req, res) => {
         title: 'Community Chat'
     })
 });
+
+/* TO-DO Ruta para mostrar todos los tickets asociados a un usuario */
+// views.get('/tickets', userLogged, async (req, res) => {
+//     try {
+//         const { userId } = req.session.user;
+//         const tickets = await ticketsDao.getTicketsByUserId(userId);
+//         res.render('tickets', {
+//             status: 'success',
+//             user: req.session.user,
+//             cart: req.user.cart,
+//             tickets: tickets,
+//         });
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).send({ status: 'error', result: 'An error ocurred while rendering the tickets view.'})
+//     }
+// });
+/* TO-DO Ruta para mostrar todos los tickets asociados a un usuario */
+
+/* Ruta para ver la informacion del ticket */
+views.get('/purchase/:ticketId', userLogged, async (req, res) => {
+    try {
+        const { ticketId } = req.params;
+        const ticketInfo = await ticketsDao.getTicketById(ticketId);
+
+        res.render('purchase', {
+            status: 'success',
+            user: req.session.user,
+            cart: req.user.cart,
+            order: ticketInfo.code,
+            date: ticketInfo.purchase_datetime,
+            total: ticketInfo.total,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ status: 'error', result: 'An error ocurred while rendering the purchase view.'})
+    }
+});
+/* Ruta para ver la informacion del ticket */
 
 export default views;

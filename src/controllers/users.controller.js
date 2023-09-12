@@ -46,7 +46,7 @@ class UsersController {
                     name: `${req.user.first_name} ${req.user.last_name}`,
                     email: req.user.email,
                     age: req.user.age,
-                    role: req.user.role
+                    role: req.user.role,
                 }
                 res.send({ status: 'Success', payload: req.session.user, message: 'User logged in successfully.' });
             })

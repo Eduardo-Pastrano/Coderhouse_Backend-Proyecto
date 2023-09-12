@@ -15,7 +15,7 @@ class cartsRouter {
         this.carts.put("/:cartId/products/:productId", userOnly, CartsController.updateProductQuantity);
         this.carts.post("/:cartId/products/:productId", userOnly, CartsController.addProductToCart);
         this.carts.delete('/:cartId/products/:productId', userOnly, CartsController.deleteProductFromCart);
-        this.carts.post('/:cartId/purchase', userOnly, TicketsController.createTicket);
+        this.carts.post('/:cartId/purchase', TicketsController.createTicket);
     }
 }
 
@@ -32,5 +32,6 @@ export default new cartsRouter().carts;
 // Ruta put '/:cartId/products/:productId' para actualizar solo la cantidad de un producto en un carrito especificado por id, solo un usuario puede hacerlo.
 // Ruta post '/:cartId/products/:productId' para agregar un producto de la collections products al carrito especificado por id, solo un usuario puede hacerlo.
 // Ruta delete '/:cartId/products/:productId' para eliminar un producto del carrito especificado por id solo un usuario puede hacerlo.
+// Ruta delete '/:cartId/purchase' para crear un ticket de compra en base a un carrito especificado por id por params, y un user especificado por id con req.body.
 
 /* Documentation */

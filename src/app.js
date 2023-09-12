@@ -11,6 +11,7 @@ import mongoose from "mongoose";
 import __dirname from './utils.js';
 import viewsRouter from './routes/views.router.js';
 import cartsRouter from './routes/carts.router.js';
+import ticketsRouter from './routes/tickets.router.js';
 import productsRouter from './routes/products.router.js';
 import sessionsRouter from './routes/sessions.router.js';
 import initializePassport from './config/passport.config.js';
@@ -60,6 +61,7 @@ app.use('/', viewsRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/sessions', sessionsRouter);
+app.use('/api/tickets', ticketsRouter);
 
 import { messageModel } from "./dao/models/messages.model.js"
 let messages = [];

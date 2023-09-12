@@ -11,10 +11,13 @@ export default class CartsDao {
         return carts
     }
 
-    async getCarts(cartId) {
-        let query = cartId ? { _id: cartId } : {};
-        let carts = await cartModel.find(query).populate('products._id');
-        return carts;
+    async getCartById(cartId) {
+        try {
+            const cart = await cartModel.findById(cartId);
+            return cart;
+        } catch (error) {
+            throw new Error('There was an unexpected error while trying to get the cart by id: ' + error);
+        }
     }
 
     async addCarts() {
@@ -29,7 +32,8 @@ export default class CartsDao {
             if (product && product.stock > 0) {
                 const cartProduct = cart.products.find(product => product.id === productId);
                 if (!cartProduct) {
-                    cart.products.push({ id: productId, quantity: 1 });
+                    cart.products.push({ id: productId, quantity: 1, price: product.price });
+                    console.log(product.price)
                     product.stock -= 1;
                     await product.save();
                 } else if (cartProduct.quantity < product.stock) {
