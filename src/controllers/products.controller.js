@@ -1,4 +1,8 @@
 import ProductsRepository from '../repository/products.repository.js';
+import CustomError from '../repository/errors/customErrors.js';
+import eErrors from '../repository/errors/eErrors.js';
+import { addProductErrorInfo } from '../repository/errors/info.js';
+
 const repository = new ProductsRepository();
 
 class ProductsController {
@@ -24,8 +28,22 @@ class ProductsController {
     }
 
     async addProduct(req, res) {
+        const product = req.body;
+        if (!product.title ||
+            !product.description ||
+            !product.code ||
+            !product.price ||
+            !product.status ||
+            !product.stock ||
+            !product.category) {
+            throw CustomError.createError({
+                name: 'Product creation error.',
+                cause: addProductErrorInfo(product),
+                message: 'Error trying to create the product.',
+                code: eErrors.INVALID_TYPES_ERROR
+            });
+        }
         try {
-            const product = req.body;
             await repository.addProduct(product);
             res.send({ status: 'Ok', message: 'Product created successfully.' })
         } catch (error) {
@@ -50,6 +68,15 @@ class ProductsController {
             res.send({ status: 'Ok', message: `Product with id: ${productId}, deleted successfully.` })
         } catch (error) {
             res.status(400).send({ status: 'error', error: 'There was an error deleting the product.' })
+        }
+    }
+
+    async generateProducts(req, res) {
+        try {
+            const products = await repository.generateProducts();
+            res.send({ status: 'Ok', message: 'Products generated successfully.', payload: products });
+        } catch (error) {
+            res.status(400).send({ status: 'error', error: 'There was an error generating the products.' });
         }
     }
 }

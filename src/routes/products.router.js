@@ -7,9 +7,10 @@ class productsRouter {
         this.products = Router();
         this.products.get('/', ProductsController.getProducts);
         this.products.get('/:productId', ProductsController.getProductById);
-        this.products.post('/', adminOnly, ProductsController.addProduct);
+        this.products.post('/', ProductsController.addProduct);
         this.products.put('/:productId', adminOnly, ProductsController.updateProduct);
         this.products.delete('/:productId', adminOnly, ProductsController.deleteProduct);
+        this.products.post('/mockingproducts', adminOnly, ProductsController.generateProducts);
     }
 }
 

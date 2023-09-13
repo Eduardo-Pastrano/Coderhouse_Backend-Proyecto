@@ -1,4 +1,6 @@
 import { productModel } from "../models/products.model.js"
+import { faker } from "@faker-js/faker";
+
 
 export default class ProductsDao {
     constructor() {
@@ -22,6 +24,28 @@ export default class ProductsDao {
 
     async deleteProduct(_id) {
         await productModel.deleteOne({ _id: _id });
+    }
+
+    async generateProducts() {
+        try {
+            for (let n = 0; n < 100; n++) {
+                const newProduct = {
+                    title: faker.commerce.productName(),
+                    description: faker.commerce.productDescription(),
+                    code: faker.string.uuid(),
+                    price: faker.commerce.price(),
+                    stock: faker.number.int({min: 0, max: 100}),
+                    category: faker.commerce.product(),
+                }
+                await productModel.create(newProduct);
+            }
+
+            const products = await productModel.find();
+            if(!products) throw new Error('There were no products created.')
+            return products;
+        } catch (error) {
+            throw new Error('There was an unexpected error generating the products.')
+        }
     }
 }
 

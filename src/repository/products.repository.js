@@ -22,15 +22,6 @@ class ProductsRepository {
     }
 
     async addProduct(productDto) {
-        if (!productDto.title ||
-            !productDto.description ||
-            !productDto.code ||
-            !productDto.price ||
-            !productDto.status ||
-            !productDto.stock ||
-            !productDto.category) {
-            throw new Error('Please, make sure all of the fields are completed.');
-        }
         const product = await this.dao.addProduct(productDto);
         return new ProductsDto(product);
     }
@@ -48,7 +39,16 @@ class ProductsRepository {
             await this.dao.deleteProduct(productId)
         } else {
             throw new Error('Product not found.')
-        } 
+        }
+    }
+
+    async generateProducts() {
+        try {
+            const products = await this.dao.generateProducts();
+            return products
+        } catch (error) {
+            throw new Error('No products were generated.')
+        }
     }
 }
 

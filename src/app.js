@@ -3,6 +3,7 @@ import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import passport from "passport";
 import config from './config/config.js';
+import errorHandler from './middleware/errors/index.js';
 
 import handlebars from 'express-handlebars';
 import { Server } from 'socket.io';
@@ -56,6 +57,7 @@ app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 app.set('views', __dirname + '/views');
 app.use(express.static(__dirname + '/public'));
+app.use(errorHandler);
 
 app.use('/', viewsRouter);
 app.use('/api/carts', cartsRouter);
