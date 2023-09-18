@@ -5,6 +5,7 @@ import config from './config.js';
 import UserDao from "../dao/mongo/users.dao.js";
 import { cartModel } from "../dao/models/carts.model.js";
 import { createHash, isValidPassword } from "../utils.js";
+import { logger } from "../utils/logger.js";
 
 const LocalStrategy = local.Strategy;
 
@@ -14,7 +15,7 @@ const initializePassport = () => {
             try {
                 let user = await UserDao.getUserByEmail(username);
                 if (user) {
-                    console.log('User already exists.')
+                    logger.warning('User already exists.')
                     return done(null, false, { message: 'User already exits.' });
                 }
                 const { first_name, last_name, email, age } = req.body;
@@ -74,7 +75,7 @@ const initializePassport = () => {
             }
             const user = await UserDao.getUserByEmail(username)
             if (!user) {
-                console.log("Invalid email and/or password.")
+                logger.warning("Invalid email and/or password.")
                 return done(null, false);
             }
             if (!isValidPassword(user, password)) return done(null, false);

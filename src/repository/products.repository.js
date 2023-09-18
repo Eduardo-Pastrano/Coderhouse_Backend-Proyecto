@@ -1,10 +1,11 @@
 import ProductsDto from '../dao/dto/products.dto.js';
 import ProductsDao from '../dao/mongo/products.dao.js';
+import { logger } from "../utils/logger.js";
 
 class ProductsRepository {
     constructor() {
         this.dao = new ProductsDao();
-        console.log("Connected: Repository - Products")
+        logger.info("Connected: Repository - Products")
     }
 
     async getProducts(limit) {

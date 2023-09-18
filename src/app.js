@@ -4,6 +4,8 @@ import MongoStore from 'connect-mongo';
 import passport from "passport";
 import config from './config/config.js';
 import errorHandler from './middleware/errors/index.js';
+import { logger } from './utils/logger.js';
+import { addLogger } from './utils/logger.js';
 
 import handlebars from 'express-handlebars';
 import { Server } from 'socket.io';
@@ -21,7 +23,7 @@ const app = express();
 
 // Capitalize
 const hbs = handlebars.create({
-    helpers: { 
+    helpers: {
         capitalize: (string) => string.charAt(0).toUpperCase() + string.slice(1)
     }
 });
@@ -47,29 +49,41 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-const httpServer = app.listen(config.port, () => console.log("It's alive!"));
+const httpServer = app.listen(config.port, () => {
+    logger.info("It's alive!");
+})
 const io = new Server(httpServer);
 
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 app.set('views', __dirname + '/views');
 app.use(express.static(__dirname + '/public'));
 app.use(errorHandler);
+app.use(addLogger);
 
 app.use('/', viewsRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/sessions', sessionsRouter);
 app.use('/api/tickets', ticketsRouter);
+app.get('/loggertest', (req, res) => {
+    req.logger.fatal(`Fatal! - ${new Date().toLocaleTimeString()}`);
+    req.logger.error(`Error! - ${new Date().toLocaleTimeString()}`);
+    req.logger.warning(`Warning! - ${new Date().toLocaleTimeString()}`);
+    req.logger.info(`Info - ${new Date().toLocaleTimeString()}`);
+    req.logger.http(`HTTP - ${new Date().toLocaleTimeString()}`);
+    req.logger.debug(`Debug - ${new Date().toLocaleTimeString()}`);
+    res.send({ message: 'Logger testing from app.js!' })
+});
 
 import { messageModel } from "./dao/models/messages.model.js"
 let messages = [];
 
 io.on('connection', async socket => {
-    console.log('New client found.');
+    logger.info('New client found.');
 
     socket.on('message', data => {
         messages.push(data);

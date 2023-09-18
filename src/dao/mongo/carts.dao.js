@@ -1,9 +1,10 @@
 import { cartModel } from "../models/carts.model.js";
 import { productModel } from "../models/products.model.js";
+import { logger } from "../../utils/logger.js";
 
 export default class CartsDao {
     constructor() {
-        console.log("Connected: DAO - Carts")
+        logger.info("Connected: DAO - Carts")
     }
 
     async getCarts() {
@@ -41,14 +42,14 @@ export default class CartsDao {
                     product.stock -= 1;
                     await product.save();
                 } else {
-                    console.log("There is not enough stock to add more of this product to the cart at the moment.")
+                    logger.warning("There is not enough stock to add more of this product to the cart at the moment.")
                 }
                 await cart.save();
             } else {
-                console.log("The product is out of stock or does not exist.")
+                logger.error("The product is out of stock or does not exist.")
             }
         } else {
-            console.log("Cart not found.")
+            logger.fatal("Cart not found.")
         }
     }
 
@@ -60,10 +61,10 @@ export default class CartsDao {
                 cart.products.splice(productIndex, 1);
                 await cart.save();
             } else {
-                console.log('Product not found in cart.')
+                logger.error('Product not found in cart.')
             }
         } else {
-            console.log('Cart not found.')
+            logger.fatal('Cart not found.')
         }
     }
 
@@ -73,7 +74,7 @@ export default class CartsDao {
             cart.products = [];
             await cart.save();
         } else {
-            console.log('Cart not found.')
+            logger.fatal('Cart not found.')
         }
     }
 
@@ -83,7 +84,7 @@ export default class CartsDao {
             cart.products = products.map(product => ({ _id: product._id, quantity: product.quantity }));
             await cart.save();
         } else {
-            console.log('Cart not found.')
+            logger.fatal('Cart not found.')
         }
     }
 
@@ -95,10 +96,10 @@ export default class CartsDao {
                 product.quantity = quantity;
                 await cart.save();
             } else {
-                console.log('Product not found in cart.')
+                logger.error('Product not found in cart.')
             }
         } else {
-            console.log("Cart not found.")
+            logger.fatal("Cart not found.")
         }
     }
 

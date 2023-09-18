@@ -2,12 +2,13 @@ import passport from "passport";
 import UserDao from "../dao/mongo/users.dao.js";
 import UserDto from "../dao/dto/users.dto.js";
 import { createHash } from "../utils.js";
+import { logger } from "../utils/logger.js";
 
 class UsersController {
     register(req, res, next) {
         passport.authenticate('register', { failureRedirect: '/failedregister' }, (err, user, info) => {
             if (err) {
-                console.error('Failed register strategy.');
+                logger.fatal('Failed register strategy.');
                 res.status(500).send(err);
             }
             if (!user) {
@@ -15,7 +16,7 @@ class UsersController {
             }
             req.login(user, err => {
                 if (err) {
-                    console.error(err);
+                    logger.error(err);
                     return res.status(500).send(err);
                 }
                 return res.send({ status: 'Success', message: 'User registered successfully.' });
@@ -24,14 +25,14 @@ class UsersController {
     }
 
     failedRegister(req, res) {
-        console.log('Failed register strategy.');
+        logger.fatal('Failed register strategy.');
         res.send({ error: 'failed' })
     }
 
     login(req, res, next) {
         passport.authenticate('login', { failureRedirect: '/failedlogin' }, (err, user) => {
             if (err) {
-                console.error(err);
+                logger.fatal(err);
                 res.status(500).send(err);
             }
             if (!user) {
@@ -39,7 +40,7 @@ class UsersController {
             }
             req.login(user, err => {
                 if (err) {
-                    console.error(err);
+                    logger.error(err);
                     return res.status(500).send(err);
                 }
                 req.session.user = {
@@ -70,7 +71,7 @@ class UsersController {
     githubCallback(req, res) {
         passport.authenticate('github', { failureRedirect: '/login' }, (err, user) => {
             if (err) {
-                console.error(err);
+                logger.fatal(err);
                 res.status(500).send(err);
             }
             if (!user) {
@@ -78,7 +79,7 @@ class UsersController {
             }
             req.login(user, err => {
                 if (err) {
-                    console.error(err);
+                    logger.error(err);
                     res.status(500).send(err);
                 }
                 req.session.user = {
@@ -102,7 +103,7 @@ class UsersController {
             await UserDao.updateUser(user._id, { password: newPassword });
             res.send({ status: 'Success', message: 'Password restored successfully.' })
         } catch (error) {
-            console.error(error);
+            logger.error(error);
             res.status(500).send({ status: 'Error', Error: error.message });
         }
     }

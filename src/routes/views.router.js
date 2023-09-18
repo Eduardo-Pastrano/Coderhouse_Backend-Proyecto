@@ -3,6 +3,7 @@ import { productModel } from "../dao/models/products.model.js";
 import { userLogged } from "../middleware/userLogged.js";
 import { userOnly } from "../middleware/userOnly.js";
 import TicketsDao from "../dao/mongo/tickets.dao.js";
+import { logger } from "../utils/logger.js";
 
 const ticketsDao = new TicketsDao();
 const views = Router();
@@ -134,7 +135,7 @@ views.get('/purchase/:ticketId', userLogged, async (req, res) => {
             total: ticketInfo.total,
         });
     } catch (error) {
-        console.log(error);
+        logger.error(error);
         res.status(500).send({ status: 'error', result: 'An error ocurred while rendering the purchase view.'})
     }
 });

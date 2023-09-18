@@ -1,10 +1,11 @@
 import CartsDao from "../dao/mongo/carts.dao.js";
 import CartsDto from "../dao/dto/carts.dto.js";
+import { logger } from "../utils/logger.js";
 
 class CartsRepository {
     constructor() {
         this.dao = new CartsDao();
-        console.log("Connected: Repository - Carts")
+        logger.info("Connected: Repository - Carts")
     }
 
     async getCarts(limit) {

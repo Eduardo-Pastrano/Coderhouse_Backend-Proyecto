@@ -1,13 +1,14 @@
 import TicketsDao from "../dao/mongo/tickets.dao.js";
 import CartsDao from "../dao/mongo/carts.dao.js";
 import UsersDao from "../dao/mongo/users.dao.js";
+import { logger } from "../utils/logger.js";
 
 const cartsDao = new CartsDao();
 const ticketsDao = new TicketsDao();
 
 class TicketsController {
     constructor() {
-        console.log('Controller - Tickets');
+
     }
 
     async createTicket(req, res) {
@@ -42,7 +43,7 @@ class TicketsController {
 
             res.status(200).send({ status: 'success', payload: ticketCreated, result: `The ticket with code: ${ticketNumber} was created successfully.` });
         } catch (error) {
-            console.log(error);
+            logger.fatal(error);
             res.status(500).send({ status: 'error', result: 'An error ocurred while creating the ticket' });
         }
     }
@@ -52,7 +53,7 @@ class TicketsController {
             const tickets = await ticketsDao.getTickets();
             res.status(200).send({ status: 'success', payload: tickets });
         } catch (error) {
-            console.log(error);
+            logger.fatal(error);
             res.status(500).send({ status: 'error', result: 'An error occurred while retieving the tickets' });
         }
     }
@@ -68,7 +69,7 @@ class TicketsController {
 
             res.status(200).send({ status: 'success', payload: ticket });
         } catch (error) {
-            console.log(error);
+            logger.fatal(error);
             res.status(500).send({ status: 'error', result: 'An error occurred while retrieving the ticket' });
         }
     }

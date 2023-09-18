@@ -1,8 +1,9 @@
 import { ticketModel } from "../models/ticket.model.js";
+import { logger } from "../../utils/logger.js";
 
 export default class TicketsDao {
     constructor() {
-        console.log("Connected: DAO - Tickets")
+        logger.info("Connected: DAO - Tickets")
     }
 
     async createTicket(ticket) {
@@ -10,7 +11,7 @@ export default class TicketsDao {
             const newTicket = await ticketModel.create(ticket);
             return newTicket;
         } catch (error) {
-            console.log('There was an error creating the ticket: ', error);
+            logger.fatal('There was an error creating the ticket: ', error);
             throw error;
         }
     }
@@ -20,7 +21,7 @@ export default class TicketsDao {
             let tickets = await ticketModel.find();
             return tickets
         } catch (error) {
-            console.log('There was an error trying to get the tickets:', error);
+            logger.fatal('There was an error trying to get the tickets:', error);
             throw error;
         }
     }
@@ -30,7 +31,7 @@ export default class TicketsDao {
             let ticket = await ticketModel.findById({ _id: id });
             return ticket
         } catch (error) {
-            console.log('There was an error trying to get the ticket with the specified id:', error)
+            logger.fatal('There was an error trying to get the ticket with the specified id:', error)
             throw error;
         }
     }
@@ -40,7 +41,7 @@ export default class TicketsDao {
             const tickets = await ticketModel.find({ user: userId });
             return tickets;
         } catch (error) {
-            onsole.log('There was an error trying to get the ticket for the specified user:', error)
+            logger.fatal('There was an error trying to get the ticket for the specified user:', error)
             throw error;
         }
     }

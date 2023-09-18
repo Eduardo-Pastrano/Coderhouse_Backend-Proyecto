@@ -1,4 +1,5 @@
 import { userModel } from "../models/users.model.js";
+import { logger } from "../../utils/logger.js";
 
 class UserDao {
     async createUser(user) {
