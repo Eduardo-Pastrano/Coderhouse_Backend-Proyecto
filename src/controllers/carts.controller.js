@@ -11,7 +11,7 @@ class CartsController {
             res.status(400).send({ status: 'error', error: 'Carts not found.' });
         }
     }
-
+class
     async getCartById(req, res) {
         try {
             let cartId = req.params.cartId;
