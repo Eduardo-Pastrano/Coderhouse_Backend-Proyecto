@@ -96,12 +96,18 @@ class UsersController {
     async resetPassword(req, res) {
         const { email, password } = req.body;
         if (!email || !password) return res.status(400).send({ status: 'Error', Error: 'Incomplete values.' });
+
         try {
             const user = await UserDao.getUserByEmail(email);
             if (!user) return res.status({ status: 'Error', Error: 'User not found' });
+
             const newPassword = createHash(password);
+            if (newPassword === user.password) {
+                return res.status(400).send({ status: 'Error', Error: 'The new password must be different from the old password.' })
+            }
+
             await UserDao.updateUser(user._id, { password: newPassword });
-            res.send({ status: 'Success', message: 'Password restored successfully.' })
+            res.send({ status: 'Success', message: 'Password has been reset successfully.' })
         } catch (error) {
             logger.error(error);
             res.status(500).send({ status: 'Error', Error: error.message });

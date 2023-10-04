@@ -88,6 +88,16 @@ views.get('/resetpassword', async (req, res) => {
     res.render('resetPassword');
 });
 
+views.get('/resetpassword/:token', async (req, res) => {
+    const { token } = req.params;
+
+    if (req.session.resetPassword && req.session.resetPassword.token === token && req.session.resetPassword.expires > Date.now()) {
+        res.render('resetPassword');
+    } else {
+        res.render('linkExpired');
+    }
+});
+
 views.get('/realtimeproducts', userLogged, async (req, res) => {
     res.render('realTimeProducts', {
         style: 'index.css',
@@ -136,7 +146,7 @@ views.get('/purchase/:ticketId', userLogged, async (req, res) => {
         });
     } catch (error) {
         logger.error(error);
-        res.status(500).send({ status: 'error', result: 'An error ocurred while rendering the purchase view.'})
+        res.status(500).send({ status: 'error', result: 'An error ocurred while rendering the purchase view.' })
     }
 });
 /* Ruta para ver la informacion del ticket */

@@ -15,6 +15,8 @@ form.addEventListener('submit', event => {
     }).then(result => {
         if (result.status === 200) {
             window.location.replace('/')
+        } else {
+            console.log('Incorrect credentials');
         }
     })
 })
