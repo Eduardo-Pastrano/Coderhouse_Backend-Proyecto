@@ -3,6 +3,7 @@ import UserDao from "../dao/mongo/users.dao.js";
 import UserDto from "../dao/dto/users.dto.js";
 import { createHash } from "../utils.js";
 import { logger } from "../utils/logger.js";
+import { isValidPassword } from "../utils.js";
 
 class UsersController {
     register(req, res, next) {
@@ -36,7 +37,7 @@ class UsersController {
                 res.status(500).send(err);
             }
             if (!user) {
-                return res.status(400).send({ status: 'Error', Error: 'Invalid email and/or password.' });
+                return res.status(400).send({ status: 'Error', message: 'Invalid email and/or password.' });
             }
             req.login(user, err => {
                 if (err) {
@@ -75,7 +76,7 @@ class UsersController {
                 res.status(500).send(err);
             }
             if (!user) {
-                return res.status(400).send({ status: 'Error', Error: 'Failed GitHub authentication.' });
+                return res.status(400).send({ status: 'Error', message: 'Failed GitHub authentication.' });
             }
             req.login(user, err => {
                 if (err) {
@@ -95,22 +96,22 @@ class UsersController {
 
     async resetPassword(req, res) {
         const { email, password } = req.body;
-        if (!email || !password) return res.status(400).send({ status: 'Error', Error: 'Incomplete values.' });
+        if (!email || !password) return res.status(400).send({ status: 'Error', message: 'Incomplete values.' });
 
         try {
             const user = await UserDao.getUserByEmail(email);
-            if (!user) return res.status({ status: 'Error', Error: 'User not found' });
+            if (!user) return res.status(404).send({ status: 'Error', message: 'User not found' });
 
             const newPassword = createHash(password);
-            if (newPassword === user.password) {
-                return res.status(400).send({ status: 'Error', Error: 'The new password must be different from the old password.' })
+            if (isValidPassword(user, password)) {
+                return res.status(400).send({ status: 'Error', message: 'New password must be different from the old password.' });
             }
 
             await UserDao.updateUser(user._id, { password: newPassword });
-            res.send({ status: 'Success', message: 'Password has been reset successfully.' })
+            res.status(200).send({ status: 'Success', message: 'Password has been reset successfully.', redirectTo: '/login' });
         } catch (error) {
             logger.error(error);
-            res.status(500).send({ status: 'Error', Error: error.message });
+            res.status(500).send({ status: 'Error', message: error.message });
         }
     }
 
@@ -119,7 +120,61 @@ class UsersController {
             const userDto = new UserDto(req.user);
             res.json(userDto)
         } else {
-            res.status(401).json({ error: 'There is no user authenticated.' });
+            res.status(401).json({ message: 'There is no user authenticated.' });
+        }
+    }
+
+    async toggleRole(req, res) {
+        try {
+            const userId = req.params.userId;
+            const user = await UserDao.getUserById(userId);
+            
+            if (!user) {
+                return res.status(404).json({ message: 'User not found.' });
+            }
+
+            const newRole = user.role == 'user' ? 'premium' : 'user';
+            await UserDao.updateUser(userId, { role: newRole });
+
+            req.login(user, error => {
+                if(error) {
+                    logger.error(error);
+                    res.status(500).send(error);
+                }
+                res.json({ message: `User role has been updated to: ${newRole}.` });
+            });
+        } catch (error) {
+            logger.error(error);
+            res.status(500).json({ status: 'Error', message: error.message });
+        }
+    }
+
+    async autoToggle(req, res) {
+        try {
+            if (!req.isAuthenticated()) {
+                return res.status(401).json({ message: 'You must be logged in to perform this action.' });
+            }
+
+            const userId = req.user._id;
+            const user = await UserDao.getUserById(userId);
+
+            if (!user) {
+                return res.status(404).json({ message: 'User not found'})
+            }
+
+            const newRole = user.role == 'user' ? 'premium' : 'user';
+            await UserDao.updateUser(userId, { role: newRole });
+
+            req.login(user, error => {
+                if(error) {
+                    logger.error(error);
+                    res.status(500).send(error);
+                }
+                res.json({ message: `User role updated to: ${newRole}. Was completed successfully.` });
+            });
+        } catch (error) {
+            logger.error(error);
+            res.status(500).json({ status: 'Error', message: error.message });
         }
     }
 }

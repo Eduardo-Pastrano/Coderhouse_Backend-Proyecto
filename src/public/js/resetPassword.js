@@ -13,13 +13,17 @@ form.addEventListener('submit', event => {
         headers: {
             'Content-Type': 'application/json'
         }
-    }).then(result => {
+    }).then(async (result) => {
         if (result.status === 200) {
-            window.location.replace('/login');
+            const responseJson = await result.json();
+            console.log(responseJson.message);
+            if (responseJson.redirectTo) {
+                window.location.href = responseJson.redirectTo;
+            }
         } else if (result.status === 400) {
             console.log('Password reset failed: New password must be different from the old one.')
         } else {
-            console.log('Password reset failed: Unknown error.');
+            console.log('Password reset failed with status code:', result.status);
         }
     }).catch(error => {
         console.log('Password reset failed: ', error);

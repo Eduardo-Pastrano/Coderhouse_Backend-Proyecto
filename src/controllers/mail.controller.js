@@ -1,5 +1,6 @@
 import __dirname from '../utils.js';
 import crypto from 'crypto';
+import config from '../config/config.js';
 import MailRepository from '../repository/mail.repository.js';
 
 const mailRepository = new MailRepository();
@@ -12,13 +13,13 @@ class MailController {
 
             req.session.resetPassword = { 
                 token: token, 
-                expires: Date.now() + 180000 // 180000 milliseconds = 3 minutes
+                expires: Date.now() + 3600000
             };
 
             const link = `http://localhost:8080/resetpassword/${token}`;
 
             const mailParams = {
-                from: 'epastranom@gmail.com',
+                from: config.gmail_user,
                 to: 'epastranom@gmail.com',
                 subject: 'Password reset link',
                 html: `<div> <h1>Forgot your password?</h1> </div>
@@ -27,7 +28,7 @@ class MailController {
             };
 
             const result = await transport.sendMail(mailParams);
-            res.send('Mail enviado')
+            res.render('checkEmail')
         } catch(error) {
             console.log(error)
         }

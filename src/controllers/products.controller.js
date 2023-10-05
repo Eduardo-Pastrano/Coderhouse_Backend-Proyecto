@@ -2,6 +2,7 @@ import ProductsRepository from '../repository/products.repository.js';
 import CustomError from '../repository/errors/customErrors.js';
 import eErrors from '../repository/errors/eErrors.js';
 import { addProductErrorInfo } from '../repository/errors/info.js';
+import UsersDto from '../dao/dto/users.dto.js';
 
 const repository = new ProductsRepository();
 
@@ -44,8 +45,20 @@ class ProductsController {
             });
         }
         try {
-            await repository.addProduct(product);
-            res.send({ status: 'Ok', message: 'Product created successfully.' })
+            const userRole = req.session.user.role;
+            let ownerEmail;
+            if (userRole !== 'premium') {
+                ownerEmail = 'admin';
+            } else {
+                ownerEmail = req.session.user.email;
+            }
+
+            const newProduct = await repository.addProduct({
+                ...product,
+                owner: ownerEmail
+            });
+
+            res.send({ status: 'Ok', message: 'Product created successfully.', product: newProduct })
         } catch (error) {
             res.status(400).send({ status: 'error', error: 'There was an error creating the product.' });
         }
@@ -60,14 +73,30 @@ class ProductsController {
             res.status(400).send({ status: 'error', error: 'There was an error updating the product.' })
         }
     }
-
+    
     async deleteProduct(req, res) {
         try {
-            let productId = req.params.productId;
-            await repository.deleteProduct(productId);
-            res.send({ status: 'Ok', message: `Product with id: ${productId}, deleted successfully.` })
+            const productId = req.params.productId;
+            const product = await repository.getProductById(productId);
+
+            if (!product) return res.status(404).send({ status: 'error', error: 'Product not found.' });
+
+            if (req.session.user) {
+                const { role, email } = req.session.user;
+
+                if (role === 'admin') {
+                    await repository.deleteProduct(productId);
+                    return res.send({ status: 'Ok', message: `Product with id: ${productId}, deleted successfully.` })
+                }
+
+                if (role === 'premium' && product.owner === email) {
+                    await repository.deleteProduct(productId);
+                    return res.send({ status: 'Ok', message: `Product with id: ${productId}, deleted successfully.` })
+                }
+            }
+            return res.status(403).send({ status: 'error', message: "You don't have enough permissions to delete this product." });
         } catch (error) {
-            res.status(400).send({ status: 'error', error: 'There was an error deleting the product.' })
+            res.status(400).send({ status: 'error', error: 'There was an error deleting the product.' });
         }
     }
 

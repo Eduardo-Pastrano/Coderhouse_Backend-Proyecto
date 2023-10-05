@@ -2,7 +2,6 @@ import { productModel } from "../models/products.model.js"
 import { faker } from "@faker-js/faker";
 import { logger } from "../../utils/logger.js";
 
-
 export default class ProductsDao {
     constructor() {
         logger.info("Connected: DAO - Products")

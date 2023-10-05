@@ -1,15 +1,17 @@
 import { Router } from "express";
 import ProductsController from "../controllers/products.controller.js";
+import { allUsers } from "../middleware/allUsers.js";
 import { adminOnly } from "../middleware/adminOnly.js";
+import { premiumOnly } from "../middleware/premiumOnly.js";
 
 class productsRouter {
     constructor() {
         this.products = Router();
         this.products.get('/', ProductsController.getProducts);
         this.products.get('/:productId', ProductsController.getProductById);
-        this.products.post('/', ProductsController.addProduct);
+        this.products.post('/', allUsers, ProductsController.addProduct);
         this.products.put('/:productId', adminOnly, ProductsController.updateProduct);
-        this.products.delete('/:productId', adminOnly, ProductsController.deleteProduct);
+        this.products.delete('/:productId', premiumOnly, adminOnly, ProductsController.deleteProduct);
         this.products.post('/mockingproducts', adminOnly, ProductsController.generateProducts);
     }
 }

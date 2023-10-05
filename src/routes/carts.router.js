@@ -2,6 +2,7 @@ import { Router } from "express";
 import CartsController from "../controllers/carts.controller.js";
 import TicketsController from "../controllers/tickets.controller.js";
 import { userOnly } from "../middleware/userOnly.js";
+import { normalAndPremium } from "../middleware/normalAndPremium.js"
 
 class cartsRouter {
     constructor() {
@@ -12,9 +13,9 @@ class cartsRouter {
         this.carts.delete('/:cartId', CartsController.deleteCart)
         this.carts.delete('/:cartId/empty', CartsController.emptyCart);
         this.carts.put('/:cartId', CartsController.updateCartProducts);
-        this.carts.put("/:cartId/products/:productId", userOnly, CartsController.updateProductQuantity);
-        this.carts.post("/:cartId/products/:productId", userOnly, CartsController.addProductToCart);
-        this.carts.delete('/:cartId/products/:productId', userOnly, CartsController.deleteProductFromCart);
+        this.carts.put("/:cartId/products/:productId", normalAndPremium, CartsController.updateProductQuantity);
+        this.carts.post("/:cartId/products/:productId", normalAndPremium, CartsController.addProductToCart);
+        this.carts.delete('/:cartId/products/:productId', normalAndPremium, CartsController.deleteProductFromCart);
         this.carts.post('/:cartId/purchase', TicketsController.createTicket);
     }
 }
@@ -32,6 +33,6 @@ export default new cartsRouter().carts;
 // Ruta put '/:cartId/products/:productId' para actualizar solo la cantidad de un producto en un carrito especificado por id, solo un usuario puede hacerlo.
 // Ruta post '/:cartId/products/:productId' para agregar un producto de la collections products al carrito especificado por id, solo un usuario puede hacerlo.
 // Ruta delete '/:cartId/products/:productId' para eliminar un producto del carrito especificado por id solo un usuario puede hacerlo.
-// Ruta delete '/:cartId/purchase' para crear un ticket de compra en base a un carrito especificado por id por params, y un user especificado por id con req.body.
+// Ruta post '/:cartId/purchase' para crear un ticket de compra en base a un carrito especificado por id por params, y un user especificado por id con req.body.
 
 /* Documentation */

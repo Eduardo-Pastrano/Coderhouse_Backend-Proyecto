@@ -3,4 +3,4 @@ export const adminOnly = (req, res, next) => {
         return res.status(403).send({ error: 'This action is only allowed to be done by admins. '});
     }
     next();
-}
+};

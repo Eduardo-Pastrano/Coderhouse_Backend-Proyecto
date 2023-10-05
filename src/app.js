@@ -11,15 +11,14 @@ import handlebars from 'express-handlebars';
 import { Server } from 'socket.io';
 import mongoose from "mongoose";
 
+import initializePassport from './config/passport.config.js';
+
 import __dirname from './utils.js';
 import viewsRouter from './routes/views.router.js';
 import cartsRouter from './routes/carts.router.js';
 import ticketsRouter from './routes/tickets.router.js';
-import productsRouter from './routes/products.router.js';
 import sessionsRouter from './routes/sessions.router.js';
-import mailRouter from './routes/mail.router.js';
-
-import initializePassport from './config/passport.config.js';
+import productsRouter from './routes/products.router.js';
 
 const app = express();
 
@@ -67,11 +66,10 @@ app.use(errorHandler);
 app.use(addLogger);
 
 app.use('/', viewsRouter);
+app.use('/api/sessions', sessionsRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/api/products', productsRouter);
-app.use('/api/sessions', sessionsRouter);
 app.use('/api/tickets', ticketsRouter);
-app.use('/api/mail', mailRouter);
 
 app.get('/loggertest', (req, res) => {
     req.logger.fatal(`Fatal! - ${new Date().toLocaleTimeString()}`);

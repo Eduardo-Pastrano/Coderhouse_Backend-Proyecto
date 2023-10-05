@@ -69,17 +69,16 @@ const initializePassport = () => {
 
     passport.use('login', new LocalStrategy({ passReqToCallback: true, usernameField: 'email' }, async (req, username, password, done) => {
         try {
-            let role = 'user';
-            if (username === `${config.admin_email}` && password === `${config.admin_password}`) {
-                role = 'admin'
-            }
             const user = await UserDao.getUserByEmail(username)
             if (!user) {
-                logger.warning("Invalid email and/or password.")
+                logger.warning("User doesn't exist.");
                 return done(null, false);
             }
-            if (!isValidPassword(user, password)) return done(null, false);
-            user.role = role;
+            if (!isValidPassword(user, password)) {
+                logger.warning("Invalid email and/or password.");
+                user.role = role;
+                return done(null, false);
+            }
             return done(null, user);
         } catch (error) {
             return done(error);

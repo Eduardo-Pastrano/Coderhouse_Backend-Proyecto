@@ -11,7 +11,7 @@ const ticketSchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'users'
     },
-    total: Number
+    total: Number,
 })
 
 export const ticketModel =  mongoose.model(ticketCollection, ticketSchema);

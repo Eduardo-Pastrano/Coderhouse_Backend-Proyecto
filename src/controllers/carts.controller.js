@@ -1,3 +1,4 @@
+import { productModel } from "../dao/models/products.model.js";
 import CartsRepository from "../repository/carts.repository.js";
 const repository = new CartsRepository();
 
@@ -11,7 +12,7 @@ class CartsController {
             res.status(400).send({ status: 'error', error: 'Carts not found.' });
         }
     }
-class
+
     async getCartById(req, res) {
         try {
             let cartId = req.params.cartId;
@@ -34,7 +35,15 @@ class
 
     async addProductToCart(req, res) {
         const { cartId, productId } = req.params;
+        const userEmail = req.session.user.email;
+
         try {
+            const product = await productModel.findOne({ _id: productId });
+
+            if (!product) return res.status(400).send({ status: 'error', error: 'Product not found.' });
+
+            if (product.owner === userEmail) return res.status(400).send({ status: 'error', error: 'You cannot add your own product to the cart.' });
+
             await repository.addProductToCart(cartId, productId);
             res.status(200).send({ status: 'Success', payload: `Product successfully added to cart: ${cartId}.` })
         } catch (error) {

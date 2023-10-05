@@ -4,7 +4,7 @@ import MailController from "../controllers/mail.controller.js";
 class mailRouter {
     constructor() {
         this.mail = Router();
-        this.mail.get('/', MailController.sendMail);
+        this.mail.get('/requestreset', MailController.sendMail);
     }
 }
 

@@ -33,8 +33,13 @@ export default class CartsDao {
             if (product && product.stock > 0) {
                 const cartProduct = cart.products.find(product => product.id === productId);
                 if (!cartProduct) {
-                    cart.products.push({ id: productId, quantity: 1, price: product.price });
-                    console.log(product.price)
+                    cart.products.push({ 
+                        id: productId,
+                        title: product.title,
+                        price: product.price, 
+                        quantity: 1, 
+                    });
+
                     product.stock -= 1;
                     await product.save();
                 } else if (cartProduct.quantity < product.stock) {

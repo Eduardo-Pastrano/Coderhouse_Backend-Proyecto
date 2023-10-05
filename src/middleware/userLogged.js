@@ -4,4 +4,4 @@ export const userLogged = (req, res, next) => {
     } else {
         next();
     }
-}
+};

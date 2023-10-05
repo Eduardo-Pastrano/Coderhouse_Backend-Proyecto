@@ -1,5 +1,7 @@
 import { Router } from "express";
+import MailController from "../controllers/mail.controller.js";
 import usersController from "../controllers/users.controller.js";
+import { userLogged } from "../middleware/userLogged.js";
 
 class sessionsRouter {
     constructor() {
@@ -10,8 +12,13 @@ class sessionsRouter {
         this.users.get('/failedlogin', usersController.failedLogin);
         this.users.get('/github', usersController.github);
         this.users.get('/githubcallback', usersController.githubCallback);
-        this.users.post('/resetpassword', usersController.resetPassword);
-        this.users.get('/current', usersController.currentUser);
+        this.users.get('/requestreset', userLogged, MailController.sendMail);
+        this.users.post('/resetpassword', userLogged, usersController.resetPassword);
+        this.users.get('/current', userLogged, usersController.currentUser);
+        this.users.get('/premium/:userId', userLogged, usersController.toggleRole);
+        /* Ruta para realizar el cambio de rol con el usuario autenticado */
+        this.users.get('/premium-role', userLogged, usersController.autoToggle);
+        /* Ruta para realizar el cambio de rol con el usuario autenticado */
     }
 }
 

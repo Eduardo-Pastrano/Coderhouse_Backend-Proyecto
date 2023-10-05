@@ -74,6 +74,9 @@ views.get('/profile', userLogged, async (req, res) => {
 views.get('/current', userLogged, async (req, res) => {
     res.render('current', {
         user: req.session.user,
+        role: req.user.role,
+        name: req.user.name,
+        email: req.user.email,
     });
 });
 

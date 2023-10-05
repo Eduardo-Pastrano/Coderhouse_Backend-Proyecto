@@ -3,4 +3,4 @@ export const userOnly = (req, res, next) => {
         return res.status(403).send({ error: 'This action can only be done by users. '});
     }
     next();
-}
+};
