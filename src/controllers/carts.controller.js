@@ -7,9 +7,9 @@ class CartsController {
         try {
             let limit = req.query.limit;
             let carts = await repository.getCarts(limit);
-            res.send({ status: 'Ok', payload: carts });
+            res.status(200).send({ status: 'Ok', payload: carts });
         } catch (error) {
-            res.status(400).send({ status: 'error', error: 'Carts not found.' });
+            res.status(404).send({ status: 'error', error: 'Carts not found.' });
         }
     }
 
@@ -17,8 +17,8 @@ class CartsController {
         try {
             let cartId = req.params.cartId;
             let cart = await repository.getCartById(cartId);
-            if (!cart) return res.status(400).send({ status: 'error', error: 'Cart not found.' });
-            res.send(cart);
+            if (!cart) return res.status(404).send({ status: 'error', error: 'Cart not found.' });
+            res.status(200).send(cart);
         } catch (error) {
             res.status(400).send({ status: 'error', error: error.message });
         }
@@ -40,7 +40,7 @@ class CartsController {
         try {
             const product = await productModel.findOne({ _id: productId });
 
-            if (!product) return res.status(400).send({ status: 'error', error: 'Product not found.' });
+            if (!product) return res.status(404).send({ status: 'error', error: 'Product not found.' });
 
             if (product.owner === userEmail) return res.status(400).send({ status: 'error', error: 'You cannot add your own product to the cart.' });
 

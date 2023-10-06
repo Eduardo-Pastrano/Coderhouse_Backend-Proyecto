@@ -11,8 +11,8 @@ class cartsRouter {
         this.carts.post('/', CartsController.addCarts);
         this.carts.get('/:cartId', CartsController.getCartById);
         this.carts.delete('/:cartId', CartsController.deleteCart)
-        this.carts.delete('/:cartId/empty', CartsController.emptyCart);
         this.carts.put('/:cartId', CartsController.updateCartProducts);
+        this.carts.delete('/:cartId/empty', CartsController.emptyCart);
         this.carts.put("/:cartId/products/:productId", normalAndPremium, CartsController.updateProductQuantity);
         this.carts.post("/:cartId/products/:productId", normalAndPremium, CartsController.addProductToCart);
         this.carts.delete('/:cartId/products/:productId', normalAndPremium, CartsController.deleteProductFromCart);

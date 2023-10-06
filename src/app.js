@@ -2,6 +2,8 @@ import express from 'express';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import passport from "passport";
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUiExpress from 'swagger-ui-express';
 import config from './config/config.js';
 import errorHandler from './middleware/errors/index.js';
 import { logger } from './utils/logger.js';
@@ -47,6 +49,21 @@ app.use(session({
     saveUninitialized: false
 }));
 
+/* Swagger */
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.1',
+        info: {
+            title: "Documentation for my backend server.",
+            description: "Documentation of everything my backend server manages and handles, quick overview would be: Users, Sessions, Carts, Products, Tickets, Messages."
+        }
+    },
+    apis: [__dirname + '/docs/*.yaml']
+};
+
+const specs = swaggerJsdoc(swaggerOptions);
+/* Swagger */
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -70,6 +87,7 @@ app.use('/api/sessions', sessionsRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/tickets', ticketsRouter);
+app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 
 app.get('/loggertest', (req, res) => {
     req.logger.fatal(`Fatal! - ${new Date().toLocaleTimeString()}`);

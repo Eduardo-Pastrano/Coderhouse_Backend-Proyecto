@@ -1,0 +1,102 @@
+paths:
+  /api/carts/:
+    get:
+      summary: This endpoint shows us all of the carts saved on our database.
+      tags:
+        - Carts
+      responses:
+        '200':
+          description: The carts were correctly retrieved from the database.
+        '404':
+          description: The carts were not found.
+    post:
+      summary: This endpoint allows a user to add/create a cart with an empty array of products.
+      tags:
+        - Carts
+      responses:
+        '200':
+          description: The cart has been created succesfully and saved to the database.
+        '400':
+          description: There was an error creating the cart and saving it to the database.
+  /api/carts/:cartId:
+    get:
+      summary: This endpoint shows us the cart specified with an ID by params.
+      tags:
+        - Carts
+      responses:
+        '200':
+          description: The cart has been retrieved succesfully from the database.
+        '400':
+          description: Error message while trying to retrieve the cart.
+        '404':
+          description: The cart was not found in the database, the ID might be wrong.
+    put:
+      summary: This endpoint allows us to update the products of a cart specified with an ID via params.
+      tags:
+        - Carts
+      responses:
+        '200':
+          description: The cart was updated succesfully and saved to the database.
+        '400':
+          description: There was an error trying to update the cart and save it to the database.
+    delete:
+      summary: This endpoint allows us to delete a cart from the database, it first retrieve the cart by ID specified via params.
+      tags:
+        - Carts
+      responses:
+        '200':
+          description: The cart has been deleted succesfully.
+        '400':
+          description: Error message explaining why the cart could not be deleted.
+  /api/carts/:cartId/empty:
+    delete:
+      summary: This endpoint serves the purpose of emptying the cart specified with an ID via params.
+      tags:
+        - Carts
+      responses:
+        '200':
+          description: The products were succesfully removed from the cart, and it gets updated in the database.
+        '400':
+          description: There was an error trying to remove the products from the cart.
+  /api/carts/:cartId/products/:productId:
+    put:
+      summary: This endpoint allows us to updated the quantity of a product specified with ID via params, which is saved in the cart specified with ID via params as well.
+      tags:
+        - Carts
+      responses:
+        '200':
+          description: The product quantity has been updated succesfully.
+        '400':
+          description: There was an error while trying to update the quantity of the product.
+    post:
+      summary: This endpoint serves the purpose of adding a product specified with ID into the cart that is specified with ID as well. The ID's are specified via params.
+      tags: 
+        - Carts
+      responses:
+        '200':
+          description: The product was succesfully added to the cart.
+        '400':
+          description: There are could be 2 reasons. A user with a role of 'Premium' cannot add a product they own to their own cart. Or, there was an error while adding the product to said cart.
+        '404':
+          description: The product was not found with the specified ID.
+    delete:
+      summary: This endpoint allows the user to delete a product from a cart, both the product and cart have to be specified with and ID via params.
+      tags:
+        - Carts
+      responses:
+        '200':
+          description: The product was succesfully removed from the cart.
+        '400':
+          description: There was an error trying to remove the product from the cart.
+  /api/carts/:cartId/purchase:
+    post:
+      summary: This endopoint allows the user to create a purchase ticket, that is going to show the code of purchase, the date and time of the purchase, the owner(user id) and the total amount.
+      tags:
+        - Carts
+      responses:
+        '200':
+          description: The ticket was generated succesfully.
+        '400':
+          description: There was an error trying to create the ticket.
+        '404':
+          description: The cart specified with the ID was not found.

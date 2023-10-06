@@ -19,7 +19,7 @@ class TicketsController {
             const user = await UsersDao.getUserById(id);
 
             if (!cart) {
-                return res.status(400).send({ status: 'error', result: 'Cart not found.' });
+                return res.status(404).send({ status: 'error', result: 'Cart not found.' });
             }
 
             const actualTicket = cart.products;
@@ -44,7 +44,7 @@ class TicketsController {
             res.status(200).send({ status: 'success', payload: ticketCreated, result: `The ticket with code: ${ticketNumber} was created successfully.` });
         } catch (error) {
             logger.fatal(error);
-            res.status(500).send({ status: 'error', result: 'An error ocurred while creating the ticket' });
+            res.status(400).send({ status: 'error', result: 'An error ocurred while creating the ticket' });
         }
     }
 

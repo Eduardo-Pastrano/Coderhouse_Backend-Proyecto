@@ -11,9 +11,9 @@ class ProductsController {
         try {
             let limit = req.query.limit;
             let products = await repository.getProducts(limit);
-            res.send({ status: 'Ok', payload: products });
+            res.status(200).send({ status: 'Ok', payload: products });
         } catch (error) {
-            res.status(400).send({ status: 'error', error: 'Products not found.' });
+            res.status(404).send({ status: 'error', error: 'Products not found.' });
         }
     }
 
@@ -21,8 +21,8 @@ class ProductsController {
         try {
             let productId = req.params.productId;
             let product = await repository.getProductById(productId);
-            if (!product) return res.status(400).send({ status: 'error', error: 'Product not found.' });
-            res.send(product);
+            if (!product) return res.status(404).send({ status: 'error', error: 'Product not found.' });
+            res.status(200).send(product);
         } catch (error) {
             res.status(400).send({ status: 'error', error: error.message });
         }
@@ -58,7 +58,7 @@ class ProductsController {
                 owner: ownerEmail
             });
 
-            res.send({ status: 'Ok', message: 'Product created successfully.', product: newProduct })
+            res.status(200).send({ status: 'Ok', message: 'Product created successfully.', product: newProduct })
         } catch (error) {
             res.status(400).send({ status: 'error', error: 'There was an error creating the product.' });
         }
@@ -68,7 +68,7 @@ class ProductsController {
         try {
             let productId = req.params.productId;
             let updatedProduct = await repository.updateProduct(productId, req.body);
-            res.send({ status: 'Ok', message: `Product with id: ${productId}, updated successfully.` });
+            res.status(200).send({ status: 'Ok', message: `Product with id: ${productId}, updated successfully.` });
         } catch (error) {
             res.status(400).send({ status: 'error', error: 'There was an error updating the product.' })
         }
@@ -86,12 +86,12 @@ class ProductsController {
 
                 if (role === 'admin') {
                     await repository.deleteProduct(productId);
-                    return res.send({ status: 'Ok', message: `Product with id: ${productId}, deleted successfully.` })
+                    return res.status(200).send({ status: 'Ok', message: `Product with id: ${productId}, deleted successfully.` })
                 }
 
                 if (role === 'premium' && product.owner === email) {
                     await repository.deleteProduct(productId);
-                    return res.send({ status: 'Ok', message: `Product with id: ${productId}, deleted successfully.` })
+                    return res.status(200).send({ status: 'Ok', message: `Product with id: ${productId}, deleted successfully.` })
                 }
             }
             return res.status(403).send({ status: 'error', message: "You don't have enough permissions to delete this product." });
@@ -103,7 +103,7 @@ class ProductsController {
     async generateProducts(req, res) {
         try {
             const products = await repository.generateProducts();
-            res.send({ status: 'Ok', message: 'Products generated successfully.', payload: products });
+            res.status(200).send({ status: 'Ok', message: 'Products generated successfully.', payload: products });
         } catch (error) {
             res.status(400).send({ status: 'error', error: 'There was an error generating the products.' });
         }

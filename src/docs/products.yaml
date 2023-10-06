@@ -1,0 +1,64 @@
+paths:
+  /api/products/:
+    get:
+      summary: This endpoint shows us all of the products saved on our database.
+      tags:
+        - Products
+      responses:
+        '200':
+          description: The products were correctly retrieved from the database.
+        '404':
+          description: The products were not found.
+    post:
+      summary: This endpoint allows a user that is registered and with a role of User, Premium, or Admin to add/create a product with the properties being sent from the body.
+      tags:
+        - Products
+      responses:
+        '200':
+          description: The product has been created succesfully and saved to the database.
+        '400':
+          description: There was an error creating the product and saving it to the database.
+  /api/products/:productId:
+    get:
+      summary: This endpoint shows us the product specified with an ID by params.
+      tags:
+        - Products
+      responses:
+        '200':
+          description: The product has been retrieved succesfully from the database.
+        '400':
+          description: Error message while trying to retrieve the product.
+        '404':
+          description: The product was not found in the database, the ID might be wrong.
+    put:
+      summary: This endpoint allows us to update the properties of a product specified with an ID by params.
+      tags:
+        - Products
+      responses:
+        '200':
+          description: The product was updated succesfully and saved to the database.
+        '400':
+          description: There was an error trying to update the product and save it to the database.
+    delete:
+      summary: This endpoint allows us to delete a product from the database, it first retrieve the product by ID specfied via params. If your role is of Premium or Admin. And the premium user is only allowed to delete a product which they are the owner of.
+      tags:
+        - Products
+      responses:
+        '200':
+          description: The product has been deleted succesfully after the method checked if the role was of Admin or Premium.
+        '400':
+          description: Error message explaining the product could not be deleted.
+        '403':
+          description: The user that is trying to delete the product does not have enough permissions, meaning the Premium user is trying to delete a product they are not the owner of.
+        '404':
+          description: The product with the specified ID was not found.
+  /api/products/mockingproducts:
+    post:
+      summary: This is a mock endpoint for testing purposes that generates 100 products.
+      tags:
+        - Products
+      responses:
+        '200':
+          description: The mock products have been generated succesfully.
+        '400':
+          description: The mock products could not be created.
