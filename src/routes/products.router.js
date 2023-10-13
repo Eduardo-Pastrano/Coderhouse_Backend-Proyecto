@@ -21,7 +21,7 @@ export default new productsRouter().products;
 /* Documentation */
 
 // Ruta get '/' para obtener todos los productos, o limitar la cantidad de los mismos si se desea.
-// Ruta post '/' para agregar un producto, solo un admin puede hacerlo.
+// Ruta post '/' para agregar un producto, todos los usuarios registrados pueden hacerlo.
 // Ruta get '/:productId' para obtener el producto especificado por id.
 // Ruta put '/:productId' para actualizar el producto especificado por id, solo un admin puede hacerlo.
 // Ruta delete '/:productId' para eliminar el producto especificado por id solo un admin puede hacerlo.

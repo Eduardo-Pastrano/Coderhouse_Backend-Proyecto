@@ -9,6 +9,7 @@ export default {
     mongo_user: process.env.MONGO_USER,
     mongo_pass: process.env.MONGO_PASS,
     mongo_url: process.env.MONGO_URL,
+    mongo_test_url: process.env.MONGO_TEST_URL,
     secret_key: process.env.SECRET,
     github_client_id: process.env.GITHUB_CLIENT_ID,
     github_client_secret: process.env.GITHUB_CLIENT_SECRET,
