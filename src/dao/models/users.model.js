@@ -18,6 +18,13 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['user', 'premium'],
         default: 'user'
+    },
+    documents: {
+        name: String,
+        reference: String,
+    },
+    last_connection: {
+        type: Date,
     }
 });
 

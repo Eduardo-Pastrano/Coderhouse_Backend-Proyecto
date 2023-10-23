@@ -16,9 +16,10 @@ class sessionsRouter {
         this.users.post('/resetpassword', userLogged, usersController.resetPassword);
         this.users.get('/current', userLogged, usersController.currentUser);
         this.users.get('/premium/:userId', userLogged, usersController.toggleRole);
-        /* Ruta para realizar el cambio de rol con el usuario autenticado */
+        /* Ruta para realizar el cambio de rol autimatico con el usuario autenticado */
         this.users.get('/premium-role', userLogged, usersController.autoToggle);
-        /* Ruta para realizar el cambio de rol con el usuario autenticado */
+        /* Ruta para realizar el cambio de rol autimatico con el usuario autenticado */
+        this.users.post(':userId/documents');
     }
 }
 
