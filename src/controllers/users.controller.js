@@ -4,6 +4,8 @@ import UserDto from "../dao/dto/users.dto.js";
 import { createHash } from "../utils.js";
 import { logger } from "../utils/logger.js";
 import { isValidPassword } from "../utils.js";
+import path from 'path';
+import __dirname from "../utils.js";
 
 class UsersController {
     register(req, res, next) {
@@ -133,7 +135,13 @@ class UsersController {
                 return res.status(404).send({ message: 'User not found.' });
             }
 
-            if (!user.identification || !user.address || !user.bankStatement) {
+            const hasId = user.documents.some(doc => doc.name.includes('identification'));
+            const hasAddress = user.documents.some(doc => doc.name.includes('address'));
+            const hasBankStatement = user.documents.some(doc => doc.name.includes('bank-statement'));
+            
+            const hasAllDocuments = hasId && hasAddress && hasBankStatement;
+
+            if (!hasAllDocuments) {
                 return res.status(400).send({ message: "Unable to complete the verification process. Please upload all the required documents." })
             }
 
@@ -164,9 +172,26 @@ class UsersController {
 
             if (!req.files || Object.keys(req.files).length === 0) {
                 return res.status(400).send({ message: "No file(s) provided" })
-            } else {
-                res.status(200).send({ message: 'File(s) uploaded successfully.' })
             }
+
+            const documents = user.documents || [];
+            const uploadPath = path.join(__dirname, 'public', 'uploads');
+
+            for (const fileKey in req.files) {
+                const file = req.files[fileKey][0];
+                const filePath = path.join(uploadPath, file.fieldname, file.originalname);
+
+                const document = {
+                    name: file.originalname,
+                    reference: filePath
+                };
+
+                documents.push(document);
+            }
+
+            await UserDao.updateUser(userId, { documents });
+
+            res.status(200).send({ message: 'File(s) uploaded successfully.' })
         } catch (error) {
             logger.error(error);
             res.status(500).send({ status: 'Error', message: error.message });
@@ -180,9 +205,17 @@ class UsersController {
             if (!user) {
                 return res.status(404).send({ message: 'User not found.' });
             }
-            if (!user.identification || !user.address || !user.bankStatement) {
+
+            const hasId = user.documents.some(doc => doc.name.includes('identification'));
+            const hasAddress = user.documents.some(doc => doc.name.includes('address'));
+            const hasBankStatement = user.documents.some(doc => doc.name.includes('bank-statement'));
+            
+            const hasAllDocuments = hasId && hasAddress && hasBankStatement;
+
+            if (!hasAllDocuments) {
                 return res.status(400).send({ message: "Unable to complete the verification process. Please upload all the required documents." })
             }
+
             next();
         } catch (error) {
             logger.error(error);

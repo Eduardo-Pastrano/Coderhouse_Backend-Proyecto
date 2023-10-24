@@ -17,23 +17,23 @@ class sessionsRouter {
         this.users.post('/resetpassword', userLogged, usersController.resetPassword);
         this.users.get('/current', userLogged, usersController.currentUser);
         this.users.get('/premium/:userId', userLogged, usersController.verifyDocs, usersController.toggleRole);
-        /* Ruta para realizar el cambio de rol autimatico con el usuario autenticado */
-        this.users.get('/premium-role', userLogged, usersController.autoToggle);
-        /* Ruta para realizar el cambio de rol autimatico con el usuario autenticado */
-        this.users.post('/:userId/documents', userLogged, uploader.fields([
+        this.users.post('/:userId/documents', uploader.fields([
             {name: 'profile', maxCount: 1},
-            {name: 'product', maxCount: 1},
-            {name: 'document', maxCount: 1},
+            {name: 'product'},
+            {name: 'document', maxCount: 3},
         ]), usersController.fileUpload);
+        /* Ruta para realizar el cambio de rol autimatico con el usuario autenticado, necesita modificaciones */
+        // this.users.get('/premium-role', userLogged, usersController.autoToggle);
+        /* Ruta para realizar el cambio de rol autimatico con el usuario autenticado, necesita modificaciones */
     }
 }
 
 export default new sessionsRouter().users;
 
-/* Documentation */
+/* Documentation - needs to be updated */
 // Ruta para realizar el registro de un usuario: /register y /failedregister
 // Ruta para realizar el login de un usuario: /login y /failedlogin
 // Rutas necesarias para la estrategia de autenticacion o login con GitHub: /github y /githubcallback
 // Ruta para realizar un password reset: /resetpassword
 // Ruta para verificar si hay algun usuario autenticado o no: /current
-/* Documentation */
+/* Documentation - needs to be updated */
