@@ -29,8 +29,14 @@ const initializePassport = () => {
                     age,
                     password: createHash(userPassword),
                     cart: newCart._id,
-                    role: 'user'
+                    role: 'user',
+                    documents: {
+                        name: '',
+                        references: ''
+                    },
+                    last_connection: new Date(),
                 }
+
                 let result = await UserDao.createUser(newUser);
                 return done(null, result);
             } catch (error) {
@@ -55,7 +61,12 @@ const initializePassport = () => {
                     age: '',
                     password: '',
                     cart: newCart._id,
-                    role: 'user'
+                    role: 'user',
+                    documents: {
+                        name: '',
+                        references: '',
+                    },
+                    last_connection: new Date(),
                 }
                 let result = await UserDao.createUser(newUser);
                 return done(null, result);
@@ -79,6 +90,10 @@ const initializePassport = () => {
                 user.role = role;
                 return done(null, false);
             }
+
+            user.last_connection = new Date();
+            await user.save();
+            
             return done(null, user);
         } catch (error) {
             return done(error);

@@ -2,6 +2,7 @@ import { Router } from "express";
 import MailController from "../controllers/mail.controller.js";
 import usersController from "../controllers/users.controller.js";
 import { userLogged } from "../middleware/userLogged.js";
+import { uploader } from "../utils.js";
 
 class sessionsRouter {
     constructor() {
@@ -15,11 +16,15 @@ class sessionsRouter {
         this.users.get('/requestreset', userLogged, MailController.sendMail);
         this.users.post('/resetpassword', userLogged, usersController.resetPassword);
         this.users.get('/current', userLogged, usersController.currentUser);
-        this.users.get('/premium/:userId', userLogged, usersController.toggleRole);
+        this.users.get('/premium/:userId', userLogged, usersController.verifyDocs, usersController.toggleRole);
         /* Ruta para realizar el cambio de rol autimatico con el usuario autenticado */
         this.users.get('/premium-role', userLogged, usersController.autoToggle);
         /* Ruta para realizar el cambio de rol autimatico con el usuario autenticado */
-        this.users.post(':userId/documents');
+        this.users.post('/:userId/documents', userLogged, uploader.fields([
+            {name: 'profile', maxCount: 1},
+            {name: 'product', maxCount: 1},
+            {name: 'document', maxCount: 1},
+        ]), usersController.fileUpload);
     }
 }
 

@@ -128,16 +128,20 @@ class UsersController {
         try {
             const userId = req.params.userId;
             const user = await UserDao.getUserById(userId);
-            
+
             if (!user) {
-                return res.status(404).json({ message: 'User not found.' });
+                return res.status(404).send({ message: 'User not found.' });
+            }
+
+            if (!user.identification || !user.address || !user.bankStatement) {
+                return res.status(400).send({ message: "Unable to complete the verification process. Please upload all the required documents." })
             }
 
             const newRole = user.role == 'user' ? 'premium' : 'user';
             await UserDao.updateUser(userId, { role: newRole });
 
             req.login(user, error => {
-                if(error) {
+                if (error) {
                     logger.error(error);
                     res.status(500).send(error);
                 }
@@ -145,28 +149,65 @@ class UsersController {
             });
         } catch (error) {
             logger.error(error);
-            res.status(500).json({ status: 'Error', message: error.message });
+            res.status(500).send({ status: 'Error', message: error.message });
+        }
+    }
+
+    async fileUpload(req, res) {
+        try {
+            const userId = req.params.userId;
+            const user = await UserDao.getUserById(userId);
+
+            if (!user) {
+                return res.status(404).send({ message: 'User not found.' });
+            }
+
+            if (!req.files || Object.keys(req.files).length === 0) {
+                return res.status(400).send({ message: "No file(s) provided" })
+            } else {
+                res.status(200).send({ message: 'File(s) uploaded successfully.' })
+            }
+        } catch (error) {
+            logger.error(error);
+            res.status(500).send({ status: 'Error', message: error.message });
+        }
+    }
+
+    async verifyDocs(req, res, next) {
+        try {
+            const userId = req.params.userId;
+            const user = await UserDao.getUserById(userId);
+            if (!user) {
+                return res.status(404).send({ message: 'User not found.' });
+            }
+            if (!user.identification || !user.address || !user.bankStatement) {
+                return res.status(400).send({ message: "Unable to complete the verification process. Please upload all the required documents." })
+            }
+            next();
+        } catch (error) {
+            logger.error(error);
+            res.status(500).send({ status: 'Error', message: error.message });
         }
     }
 
     async autoToggle(req, res) {
         try {
             if (!req.isAuthenticated()) {
-                return res.status(401).json({ message: 'You must be logged in to perform this action.' });
+                return res.status(401).send({ message: 'You must be logged in to perform this action.' });
             }
 
             const userId = req.user._id;
             const user = await UserDao.getUserById(userId);
 
             if (!user) {
-                return res.status(404).json({ message: 'User not found'})
+                return res.status(404).send({ message: 'User not found' })
             }
 
             const newRole = user.role == 'user' ? 'premium' : 'user';
             await UserDao.updateUser(userId, { role: newRole });
 
             req.login(user, error => {
-                if(error) {
+                if (error) {
                     logger.error(error);
                     res.status(500).send(error);
                 }
@@ -174,7 +215,7 @@ class UsersController {
             });
         } catch (error) {
             logger.error(error);
-            res.status(500).json({ status: 'Error', message: error.message });
+            res.status(500).send({ status: 'Error', message: error.message });
         }
     }
 }

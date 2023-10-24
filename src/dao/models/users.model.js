@@ -19,13 +19,14 @@ const userSchema = new mongoose.Schema({
         enum: ['user', 'premium'],
         default: 'user'
     },
-    documents: {
+    documents: [{
         name: String,
         reference: String,
-    },
+    }],
     last_connection: {
         type: Date,
-    }
+        default: Date.now
+    },
 });
 
 export const userModel = mongoose.model(userCollection, userSchema);
