@@ -51,7 +51,7 @@ const initializePassport = () => {
         callbackURL: config.github_callback_url,
     }, async (accessToken, refreshToken, profile, done) => {
         try {
-            let user = await UserDao.getUserByEmail({ email: profile._json.email });
+            let user = await UserDao.getUserByEmail(profile._json.email);
             const newCart = await cartModel.create({ products: [] });
             if (!user) {
                 let newUser = {
@@ -93,7 +93,7 @@ const initializePassport = () => {
 
             user.last_connection = new Date();
             await user.save();
-            
+
             return done(null, user);
         } catch (error) {
             return done(error);
