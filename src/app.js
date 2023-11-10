@@ -41,7 +41,7 @@ initializePassport();
 
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: config.mongo_url,
+        mongoUrl: config.mongo_test_url,
         mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
     }),
     secret: config.secret_key,
