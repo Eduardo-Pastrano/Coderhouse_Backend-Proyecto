@@ -1,6 +1,7 @@
 import express from 'express';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
+import cors from 'cors';
 import passport from "passport";
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUiExpress from 'swagger-ui-express';
@@ -66,6 +67,8 @@ const specs = swaggerJsdoc(swaggerOptions);
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(cors({origin:'http://localhost:5500', methods:['GET','POST','PUT']}));
 
 const httpServer = app.listen(config.port, () => {
     logger.info("It's alive!");

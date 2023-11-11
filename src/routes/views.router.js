@@ -62,7 +62,10 @@ views.get('/register', async (req, res) => {
 });
 
 views.get('/login', async (req, res) => {
-    res.render('login');
+    res.render('login', {
+        style: 'index.css',
+        title: 'Welcome!',
+    });
 });
 
 views.get('/profile', userLogged, async (req, res) => {
