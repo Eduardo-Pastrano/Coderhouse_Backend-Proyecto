@@ -27,33 +27,66 @@ class UsersController {
         })(req, res, next);
     }
 
+    async getUsers(req, res) {
+        try {
+            let users = await UserDao.getUsers();
+
+            let userData = users.map(user => ({
+                name: `${user.first_name} ${user.last_name}`,
+                email: user.email,
+                role: user.role,
+            }));
+
+            res.status(200).send({ status: 'Ok', payload: userData });
+        } catch (error) {
+            res.status(404).send({ status: 'error', error: 'Users not found.' });
+        }
+    }
+
     failedRegister(req, res) {
         logger.fatal('Failed register strategy.');
         res.send({ error: 'failed' })
     }
 
     login(req, res, next) {
-        passport.authenticate('login', { failureRedirect: '/failedlogin' }, (err, user) => {
-            if (err) {
-                logger.fatal(err);
-                res.status(500).send(err);
-            }
-            if (!user) {
-                return res.status(400).send({ status: 'Error', message: 'Invalid email and/or password.' });
-            }
-            req.login(user, err => {
+        passport.authenticate('login', { failureRedirect: '/failedlogin' }, async (err, user) => {
+            try {
                 if (err) {
-                    logger.error(err);
-                    return res.status(500).send(err);
+                    logger.fatal(err);
+                    throw err;
                 }
-                req.session.user = {
-                    name: `${req.user.first_name} ${req.user.last_name}`,
-                    email: req.user.email,
-                    age: req.user.age,
-                    role: req.user.role,
+                if (!user) {
+                    return res.status(400).send({ status: 'Error', message: 'Invalid email and/or password.' });
                 }
-                res.send({ status: 'Success', payload: req.session.user, message: 'User logged in successfully.' });
-            })
+
+                user.last_connection = new Date();
+                await user.save();
+
+                req.login(user, async (err) => {
+                    try {
+                        if (err) {
+                            logger.error(err);
+                            throw err;
+                        }
+
+                        req.session.user = {
+                            name: `${req.user.first_name} ${req.user.last_name}`,
+                            email: req.user.email,
+                            age: req.user.age,
+                            role: req.user.role,
+                            cart: req.user.cart._id,
+                        }
+
+                        res.send({ status: 'Success', payload: req.session.user, message: 'User logged in successfully.' });
+                    } catch (error) {
+                        logger.error(error);
+                        res.status(500).send(error);
+                    }
+                });
+            } catch (error) {
+                logger.error(error);
+                res.status(500).send(error);
+            }
         })(req, res, next);
     }
 
@@ -61,13 +94,12 @@ class UsersController {
         res.send({
             status: 'Error',
             Error: 'Failed login strategy.'
-        })(req, res);
+        });
     }
 
     github(req, res) {
         passport.authenticate('github', {
             scope: ['user: email']
-        }, () => {
         })(req, res);
     }
 
@@ -89,7 +121,8 @@ class UsersController {
                     name: `${req.user.first_name} ${req.user.last_name}`,
                     email: req.user.email,
                     age: req.user.age,
-                    role: 'user'
+                    role: 'user',
+                    cart: req.user.cart,
                 };
                 res.redirect('/');
             })
@@ -128,25 +161,27 @@ class UsersController {
 
     async toggleRole(req, res) {
         try {
-            const userId = req.params.userId;
-            const user = await UserDao.getUserById(userId);
+            // const userId = req.params.userId;
+            // const user = await UserDao.getUserById(userId);
+            const { userEmail } = req.params;
+            const user = await UserDao.getUserByEmail(userEmail);
 
             if (!user) {
                 return res.status(404).send({ message: 'User not found.' });
             }
 
-            const hasId = user.documents.some(doc => doc.name.includes('identification'));
-            const hasAddress = user.documents.some(doc => doc.name.includes('address'));
-            const hasBankStatement = user.documents.some(doc => doc.name.includes('bank-statement'));
-            
-            const hasAllDocuments = hasId && hasAddress && hasBankStatement;
+            // const hasId = user.documents.some(doc => doc.name.includes('identification'));
+            // const hasAddress = user.documents.some(doc => doc.name.includes('address'));
+            // const hasBankStatement = user.documents.some(doc => doc.name.includes('bank-statement'));
 
-            if (!hasAllDocuments) {
-                return res.status(400).send({ message: "Unable to complete the verification process. Please upload all the required documents." })
-            }
+            // const hasAllDocuments = hasId && hasAddress && hasBankStatement;
+
+            // if (!hasAllDocuments) {
+            //     return res.status(400).send({ message: "Unable to complete the verification process. Please upload all the required documents." })
+            // }
 
             const newRole = user.role == 'user' ? 'premium' : 'user';
-            await UserDao.updateUser(userId, { role: newRole });
+            await UserDao.updateUser(userEmail, { role: newRole });
 
             req.login(user, error => {
                 if (error) {
@@ -209,7 +244,7 @@ class UsersController {
             const hasId = user.documents.some(doc => doc.name.includes('identification'));
             const hasAddress = user.documents.some(doc => doc.name.includes('address'));
             const hasBankStatement = user.documents.some(doc => doc.name.includes('bank-statement'));
-            
+
             const hasAllDocuments = hasId && hasAddress && hasBankStatement;
 
             if (!hasAllDocuments) {
@@ -249,6 +284,33 @@ class UsersController {
         } catch (error) {
             logger.error(error);
             res.status(500).send({ status: 'Error', message: error.message });
+        }
+    }
+
+    async deleteUser(req, res) {
+        try {
+            const { userEmail } = req.params;
+            const user = await UserDao.getUserByEmail(userEmail);
+
+            if(user && user.role === 'admin') {
+                return res.status(400).send({ status: 'error', error: 'Admin users cannot be deleted.' });
+            } else if (!user) {
+                return res.status(404).send({ status: 'error', error: 'User not found.' });
+            }
+
+            await UserDao.deleteUser(userEmail);
+            res.status(200).send({ status: 'Success', payload: `User with email: ${userEmail}, has been deleted succesfully.` });
+        } catch (error) {
+            res.status(400).send({ status: 'error', error: `An error occurred while deleting the user with email: ${userEmail}.`, details: error.message })
+        }
+    }
+
+    async deleteInactiveUsers(req, res) {
+        try {
+            await UserDao.deleteInactiveUsers();
+            res.status(200).send({ status: 'Ok', message: 'Inactive users have been deleted.' });
+        } catch (error) {
+            res.status(500).send({ status: 'error', error: 'An error occurred while deleting inactive users:', error })
         }
     }
 }

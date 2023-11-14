@@ -28,13 +28,13 @@ export default class ProductsDao {
 
     async generateProducts() {
         try {
-            for (let n = 0; n < 100; n++) {
+            for (let n = 0; n < 20; n++) {
                 const newProduct = {
                     title: faker.commerce.productName(),
                     description: faker.commerce.productDescription(),
                     code: faker.string.uuid(),
                     price: faker.commerce.price(),
-                    stock: faker.number.int({min: 0, max: 100}),
+                    stock: faker.number.int({min: 0, max: 20}),
                     category: faker.commerce.product(),
                 }
                 await productModel.create(newProduct);

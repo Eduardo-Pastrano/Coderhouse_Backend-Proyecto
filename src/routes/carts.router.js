@@ -13,9 +13,9 @@ class cartsRouter {
         this.carts.delete('/:cartId', CartsController.deleteCart)
         this.carts.put('/:cartId', CartsController.updateCartProducts);
         this.carts.delete('/:cartId/empty', CartsController.emptyCart);
-        this.carts.put("/:cartId/products/:productId", normalAndPremium, CartsController.updateProductQuantity);
-        this.carts.post("/:cartId/products/:productId", normalAndPremium, CartsController.addProductToCart);
-        this.carts.delete('/:cartId/products/:productId', normalAndPremium, CartsController.deleteProductFromCart);
+        this.carts.put("/:cartId/products/:productId", CartsController.updateProductQuantity);
+        this.carts.post("/:cartId/products/:productId", CartsController.addProductToCart);
+        this.carts.delete('/:cartId/products/:productId', CartsController.deleteProductFromCart);
         this.carts.post('/:cartId/purchase', TicketsController.createTicket);
     }
 }

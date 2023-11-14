@@ -42,7 +42,7 @@ initializePassport();
 
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: config.mongo_test_url,
+        mongoUrl: config.mongo_url,
         mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
     }),
     secret: config.secret_key,
@@ -74,6 +74,7 @@ const httpServer = app.listen(config.port, () => {
     logger.info("It's alive!");
 })
 const io = new Server(httpServer);
+export { io };
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -119,5 +120,9 @@ io.on('connection', async socket => {
 
     socket.on('authenticated', data => {
         socket.broadcast.emit('newUserConnected', data);
+    });
+
+    socket.on('productUpdated', updatedProduct => {
+        io.emit('products', updatedProduct);
     });
 });

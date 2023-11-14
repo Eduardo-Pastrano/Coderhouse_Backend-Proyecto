@@ -1,0 +1,31 @@
+<div class="header-container">
+    <ul class="header-menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/profile">My profile</a></li>
+        <li><a href="/cart">My cart</a></li>
+        <li><a href="/admin">Admin</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</div>
+<div class="users-body">
+    <h1>Admin panel</h1>
+    <div class="users-view-container">
+        <h2>Users registered</h2>
+        <div class="users-grid">
+            {{#each users}}
+            <div class="user-container">
+                <p>Full name: {{this.name}}</p>
+                <p>Email: {{this.email}}</p>
+                <p class="role">Role: {{capitalize this.role}}</p>
+                <div class="buttons-container">
+                    <button class="role-user-btn" data-change-role="{{this.email}}">Change role</button>
+                    <br>
+                    <button class="delete-user-btn" data-delete-user="{{this.email}}">Delete</button>
+                </div>
+                <br>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</div>
+<script src="/js/adminPanel.js"></script>

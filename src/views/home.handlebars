@@ -1,33 +1,40 @@
-<a href="/"><button>Home</button></a> <a
-    href="/profile"><button>Profile</button></a> <a href="/current"><button>Current Session</button></a> <a
-    href="/logout"><button>Logout</button></a>
-<h1>Welcome {{user.name}}!</h1>
-<h2>Our list of products🔥💥</h2>
-<div>
-    {{#each payload}}
-    <div>
-        <h3>{{this.title}}</h3>
-        <p>Category: {{capitalize this.category}}</p>
-        <p>Description: {{this.description}}</p>
-        <p>Price: ${{this.price}}</p>
-        <p>Stock: {{this.stock}}</p>
-        <p>Available: {{this.status}}</p>
-    </div>
-    {{/each}}
-
-    {{#if hasPrevPage}}
-    <a href="/?limit={{limit}}&page={{prevPage}}&sort={{sort}}&category={{category}}"><button>⬅ Previous</button></a>
-    {{/if}}
-
-    {{#if hasNextPage}}
-    <a href="/?limit={{limit}}&page={{nextPage}}&sort={{sort}}&category={{category}}"><button>Next ➡</button></a>
-    {{/if}}
-    <br><br>
-    <div>
-        <button>Add to cart</button>
-    </div>
-
+<div class="header-container">
+    <ul class="header-menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/profile">My profile</a></li>
+        <li><a href="/cart">My cart</a></li>
+        <li><a href="/admin">Admin</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
 </div>
-
+<div class="products-body">
+    <div class="products-view-container">
+    <h2>Our list of products</h2>
+        <div class="products-grid">
+            {{#each payload.products}}
+            <div class="product-container">
+                <h3>{{this.title}}</h3>
+                <p>Category: {{capitalize this.category}}</p>
+                <p>Description: {{this.description}}</p>
+                <p>Price: ${{this.price}}</p>
+                <p>Stock: {{this.stock}}</p>
+                <div>
+                    <button class="add-to-cart-btn" data-product-id="{{this._id}}" data-cart-id="{{../payload.cart}}">Add to cart</button>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        <div class="page-buttons">
+            {{#if hasPrevPage}}
+            <a href="/?limit={{limit}}&page={{prevPage}}&sort={{sort}}&category={{category}}"><button>
+                    Previous</button></a>
+            {{/if}}
+            {{#if hasNextPage}}
+            <a href="/?limit={{limit}}&page={{nextPage}}&sort={{sort}}&category={{category}}"><button>Next
+                    </button></a>
+            {{/if}}
+        </div>
+    </div>
+</div>
 <script src="/socket.io/socket.io.js"></script>
-<script src="/js/index.js"></script>
+<script src="/js/addProduct.js"></script>

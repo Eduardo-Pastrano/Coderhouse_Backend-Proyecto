@@ -1,6 +1,13 @@
-<div>
-    <a href="/"><button>Home</button></a> <a href="/profile"><button>Profile</button></a> <a href="/current"><button>Current Session</button></a> <a href="/logout"><button>Logout</button></a>
-    <h1>Current session💻</h1>
+<div class="header-menu">
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/profile">Profile</a></li>
+        <li><a href="/current">Current</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</div>
+<div class="body">
+    <h1>Current session</h1>
     <p>Role: {{capitalize user.role}}</p>
     <p>Name: {{user.name}}</p>
     <p>Email: {{user.email}}</p>

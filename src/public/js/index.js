@@ -9,6 +9,7 @@ function updateProducts(products) {
         productsHTML += `
             <div class="product">
                 <h2>${product.title}</h2>
+                <p>Category: ${product.description}</p>
                 <p>Description: ${product.description}</p>
                 <p>Price: $${product.price}</p>
                 <p>Stock: ${product.stock}</p>

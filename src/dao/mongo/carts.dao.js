@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+import { io } from "../../app.js";
 import { cartModel } from "../models/carts.model.js";
 import { productModel } from "../models/products.model.js";
 import { logger } from "../../utils/logger.js";
@@ -27,28 +29,38 @@ export default class CartsDao {
     }
 
     async addProductToCart(cartId, productId) {
-        const cart = await cartModel.findOne({ _id: cartId });
+        const objectIdCartId = new mongoose.Types.ObjectId(cartId);
+        const cart = await cartModel.findOne({ _id: objectIdCartId });
+
         if (cart) {
+
             const product = await productModel.findOne({ _id: productId });
+
             if (product && product.stock > 0) {
                 const cartProduct = cart.products.find(product => product.id === productId);
+                
                 if (!cartProduct) {
-                    cart.products.push({ 
+                    cart.products.push({
                         id: productId,
                         title: product.title,
-                        price: product.price, 
-                        quantity: 1, 
+                        price: product.price,
+                        quantity: 1,
                     });
 
                     product.stock -= 1;
                     await product.save();
+
+                    io.emit('products', { status: 'update', payload: product });
                 } else if (cartProduct.quantity < product.stock) {
                     cartProduct.quantity += 1;
                     product.stock -= 1;
                     await product.save();
+
+                    io.emit('products', { status: 'update', payload: product });
                 } else {
                     logger.warning("There is not enough stock to add more of this product to the cart at the moment.")
                 }
+
                 await cart.save();
             } else {
                 logger.error("The product is out of stock or does not exist.")

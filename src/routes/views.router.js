@@ -1,7 +1,9 @@
 import { Router } from "express";
 import { productModel } from "../dao/models/products.model.js";
+import UsersController from "../controllers/users.controller.js";
 import { userLogged } from "../middleware/userLogged.js";
 import { userOnly } from "../middleware/userOnly.js";
+import { fetchUsers } from "../middleware/fetchUsers.js";
 import TicketsDao from "../dao/mongo/tickets.dao.js";
 import { logger } from "../utils/logger.js";
 
@@ -17,7 +19,7 @@ views.get('/', userLogged, async (req, res) => {
     };
 
     if (!limit) {
-        limit = 10
+        limit = 6
     };
 
     if (sort === 'asc') {
@@ -41,7 +43,10 @@ views.get('/', userLogged, async (req, res) => {
     const products = docs;
     res.status(200).render('home', {
         status: 'success',
-        payload: products,
+        payload: {
+            products: products,
+            cart: req.user.cart.toString(),
+        },
         page: page,
         limit,
         category,
@@ -51,19 +56,22 @@ views.get('/', userLogged, async (req, res) => {
         hasPrevPage,
         nextPage,
         prevPage,
-        style: 'index.css',
+        style: 'styles.css',
         title: 'Products🛒',
-        user: req.session.user
+        user: req.session.user,
     });
 });
 
 views.get('/register', async (req, res) => {
-    res.render('register');
+    res.render('register', {
+        style: 'styles.css',
+        title: 'Registration',
+    });
 });
 
 views.get('/login', async (req, res) => {
     res.render('login', {
-        style: 'index.css',
+        style: 'styles.css',
         title: 'Welcome!',
     });
 });
@@ -71,6 +79,8 @@ views.get('/login', async (req, res) => {
 views.get('/profile', userLogged, async (req, res) => {
     res.render('profile', {
         user: req.session.user,
+        style: 'styles.css',
+        title: 'Your profile',
     });
 });
 
@@ -80,12 +90,17 @@ views.get('/current', userLogged, async (req, res) => {
         role: req.user.role,
         name: req.user.name,
         email: req.user.email,
+        style: 'styles.css',
+        title: 'Current user!',
     });
 });
 
 views.get('/logout', async (req, res) => {
     req.session.destroy(error => {
-        if (!error) res.render('login');
+        if (!error) res.render('login', {
+            style: 'styles.css',
+            title: 'Welcome!',
+        });
         else res.send({ status: 'Logout ERROR', body: error });
     })
 });
@@ -136,7 +151,6 @@ views.get('/chat', userOnly, (req, res) => {
 // });
 /* TO-DO Ruta para mostrar todos los tickets asociados a un usuario */
 
-/* Ruta para ver la informacion del ticket */
 views.get('/purchase/:ticketId', userLogged, async (req, res) => {
     try {
         const { ticketId } = req.params;
@@ -155,6 +169,13 @@ views.get('/purchase/:ticketId', userLogged, async (req, res) => {
         res.status(500).send({ status: 'error', result: 'An error ocurred while rendering the purchase view.' })
     }
 });
-/* Ruta para ver la informacion del ticket */
+
+views.get('/admin', fetchUsers, (req, res) => {
+    res.render('admin', {
+        style: 'styles.css',
+        title: 'Users👥',
+        users: req.users,
+    });
+})
 
 export default views;

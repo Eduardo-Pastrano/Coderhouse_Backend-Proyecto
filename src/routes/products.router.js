@@ -7,12 +7,12 @@ import { premiumOnly } from "../middleware/premiumOnly.js";
 class productsRouter {
     constructor() {
         this.products = Router();
-        this.products.get('/', ProductsController.getProducts);
+        this.products.get('/', allUsers, ProductsController.getProducts);
         this.products.get('/:productId', ProductsController.getProductById);
-        this.products.post('/', allUsers, ProductsController.addProduct);
-        this.products.put('/:productId', adminOnly, ProductsController.updateProduct);
-        this.products.delete('/:productId', premiumOnly, adminOnly, ProductsController.deleteProduct);
-        this.products.post('/mockingproducts', adminOnly, ProductsController.generateProducts);
+        this.products.post('/', ProductsController.addProduct);
+        this.products.put('/:productId', ProductsController.updateProduct);
+        this.products.delete('/:productId', ProductsController.deleteProduct);
+        this.products.post('/mockingproducts', ProductsController.generateProducts);
     }
 }
 

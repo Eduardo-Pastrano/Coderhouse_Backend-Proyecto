@@ -1,6 +1,14 @@
-<div>
-    <a href="/"><button>Home</button></a> <a href="/profile"><button>Profile</button></a> <a href="/current"><button>Current Session</button></a> <a href="/logout"><button>Logout</button></a>
-    <h1>Your profile😎</h1>
+<div class="header-container">
+    <ul class="header-menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/profile">My profile</a></li>
+        <li><a href="/cart">My cart</a></li>
+        <li><a href="/admin">Admin</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</div>
+<div class="body">
+    <h1>Your profile</h1>
     <p>Name: {{user.name}}</p>
     <p>Email: {{user.email}}</p>
     <p>Age: {{user.age}}</p>

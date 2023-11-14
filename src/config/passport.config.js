@@ -91,9 +91,6 @@ const initializePassport = () => {
                 return done(null, false);
             }
 
-            user.last_connection = new Date();
-            await user.save();
-
             return done(null, user);
         } catch (error) {
             return done(error);

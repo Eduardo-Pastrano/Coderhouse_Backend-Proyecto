@@ -35,7 +35,7 @@ class CartsController {
 
     async addProductToCart(req, res) {
         const { cartId, productId } = req.params;
-        const userEmail = req.session.user.email;
+        const userEmail = req.user.email;
 
         try {
             const product = await productModel.findOne({ _id: productId });
@@ -47,7 +47,8 @@ class CartsController {
             await repository.addProductToCart(cartId, productId);
             res.status(200).send({ status: 'Success', payload: `Product successfully added to cart: ${cartId}.` })
         } catch (error) {
-            res.status(400).send({ status: 'error', error: `An error occurred while adding the product to cart: ${cartId}` })
+            console.error(`An error occurred while adding the product to cart: ${cartId},`, error );
+            res.status(500).send({ status: 'error', error: 'An unexpected error occurred while adding the product to cart.' });
         }
     }
 
