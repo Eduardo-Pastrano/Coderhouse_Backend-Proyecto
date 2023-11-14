@@ -35,14 +35,14 @@ const hbs = handlebars.create({
 
 const environment = async () => {
     mongoose.set('strictQuery', false)
-    await mongoose.connect(config.mongo_url);
+    await mongoose.connect(config.mongo_test_url);
 }
 environment();
 initializePassport();
 
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: config.mongo_url,
+        mongoUrl: config.mongo_test_url,
         mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
     }),
     secret: config.secret_key,

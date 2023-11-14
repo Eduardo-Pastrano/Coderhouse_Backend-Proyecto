@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { productModel } from "../dao/models/products.model.js";
-import UsersController from "../controllers/users.controller.js";
 import { userLogged } from "../middleware/userLogged.js";
 import { userOnly } from "../middleware/userOnly.js";
+import { adminOnly } from "../middleware/adminOnly.js";
 import { fetchUsers } from "../middleware/fetchUsers.js";
 import TicketsDao from "../dao/mongo/tickets.dao.js";
 import { logger } from "../utils/logger.js";
@@ -170,7 +170,7 @@ views.get('/purchase/:ticketId', userLogged, async (req, res) => {
     }
 });
 
-views.get('/admin', fetchUsers, (req, res) => {
+views.get('/admin', fetchUsers, adminOnly, (req, res) => {
     res.render('admin', {
         style: 'styles.css',
         title: 'Users👥',

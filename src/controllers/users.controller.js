@@ -161,35 +161,28 @@ class UsersController {
 
     async toggleRole(req, res) {
         try {
-            // const userId = req.params.userId;
-            // const user = await UserDao.getUserById(userId);
-            const { userEmail } = req.params;
-            const user = await UserDao.getUserByEmail(userEmail);
+            const userId = req.params.userId;
+            const user = await UserDao.getUserById(userId);
 
             if (!user) {
                 return res.status(404).send({ message: 'User not found.' });
             }
 
-            // const hasId = user.documents.some(doc => doc.name.includes('identification'));
-            // const hasAddress = user.documents.some(doc => doc.name.includes('address'));
-            // const hasBankStatement = user.documents.some(doc => doc.name.includes('bank-statement'));
+            const hasId = user.documents.some(doc => doc.name.includes('identification'));
+            const hasAddress = user.documents.some(doc => doc.name.includes('address'));
+            const hasBankStatement = user.documents.some(doc => doc.name.includes('bank-statement'));
 
-            // const hasAllDocuments = hasId && hasAddress && hasBankStatement;
+            const hasAllDocuments = hasId && hasAddress && hasBankStatement;
 
-            // if (!hasAllDocuments) {
-            //     return res.status(400).send({ message: "Unable to complete the verification process. Please upload all the required documents." })
-            // }
+            if (!hasAllDocuments) {
+                return res.status(400).send({ message: "Unable to complete the verification process. Please upload all the required documents." })
+            }
 
             const newRole = user.role == 'user' ? 'premium' : 'user';
-            await UserDao.updateUser(userEmail, { role: newRole });
+            await UserDao.updateUser(userId, { role: newRole });
 
-            req.login(user, error => {
-                if (error) {
-                    logger.error(error);
-                    res.status(500).send(error);
-                }
-                res.json({ message: `User role has been updated to: ${newRole}.` });
-            });
+            res.json({ message: `User role has been updated to: ${newRole}.`, newRole: newRole});
+
         } catch (error) {
             logger.error(error);
             res.status(500).send({ status: 'Error', message: error.message });

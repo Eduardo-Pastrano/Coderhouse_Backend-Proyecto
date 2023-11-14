@@ -19,15 +19,12 @@ class sessionsRouter {
         this.users.get('/requestreset', userLogged, MailController.sendMail);
         this.users.post('/resetpassword', userLogged, usersController.resetPassword);
         this.users.get('/current', userLogged, usersController.currentUser);
-        this.users.get('/premium/:userEmail', usersController.toggleRole);
+        this.users.get('/premium/:userId', userLogged, usersController.verifyDocs, usersController.toggleRole, );
         this.users.post('/:userEmail/documents', uploader.fields([
             {name: 'profile', maxCount: 1},
             {name: 'product'},
             {name: 'document', maxCount: 3},
         ]), usersController.fileUpload);
-        /* Ruta para realizar el cambio de rol autimatico con el usuario autenticado, necesita modificaciones */
-        // this.users.get('/premium-role', userLogged, usersController.autoToggle);
-        /* Ruta para realizar el cambio de rol autimatico con el usuario autenticado, necesita modificaciones */
     }
 }
 

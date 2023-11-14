@@ -30,10 +30,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     changeRoleButton.forEach(button => {
         button.addEventListener('click', async function () {
-            const userEmail = button.getAttribute("data-change-role");
+            const userId = button.getAttribute("data-change-role");
 
             try {
-                const response = await fetch(`/api/sessions/premium/${userEmail}`, {
+                const response = await fetch(`/api/sessions/premium/${userId}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -45,7 +45,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (response.ok) {
                     const roleElement = button.closest('.user-container').querySelector('.role');
                     roleElement.textContent = `Role: ${data.newRole}`;
-                    res.json({ message: `User role has been updated to: ${newRole}`, newRole: newRole });
                 } else {
                     console.error("Error changing the user's role:", data.error);
                 }
