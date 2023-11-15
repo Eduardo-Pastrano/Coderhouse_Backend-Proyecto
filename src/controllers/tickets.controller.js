@@ -14,9 +14,9 @@ class TicketsController {
     async createTicket(req, res) {
         try {
             const { cartId } = req.params;
-            const { id } = req.body;
+            const { user } = req.params;
             const cart = await cartsDao.getCartById(cartId);
-            const user = await UsersDao.getUserById(id);
+            // const user = await UsersDao.getUserById(id);
 
             if (!cart) {
                 return res.status(404).send({ status: 'error', result: 'Cart not found.' });
@@ -29,14 +29,14 @@ class TicketsController {
                 return acc;
             }, 0);
 
-            const userId = user._id;
+            // const userId = user._id;
             const ticketNumber = Date.now().toString(36) + Math.random().toString(36).substring(2, 10);
 
             const ticket = {
                 code: ticketNumber,
                 purchase_datetime: new Date(),
-                user: userId,
-                total: sum
+                userEmail: user,
+                total: sum,
             }
             let ticketCreated = await ticketsDao.createTicket(ticket);
             await cartsDao.emptyCart(cartId);

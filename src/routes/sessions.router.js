@@ -16,10 +16,10 @@ class sessionsRouter {
         this.users.get('/failedlogin', usersController.failedLogin);
         this.users.get('/github', usersController.github);
         this.users.get('/githubcallback', usersController.githubCallback);
-        this.users.get('/requestreset', userLogged, MailController.sendMail);
-        this.users.post('/resetpassword', userLogged, usersController.resetPassword);
+        this.users.post('/request-reset/', usersController.sendLink);
+        this.users.post('/resetpassword', usersController.resetPassword);
         this.users.get('/current', userLogged, usersController.currentUser);
-        this.users.get('/premium/:userId', userLogged, usersController.verifyDocs, usersController.toggleRole, );
+        this.users.get('/premium/:userId', userLogged, usersController.verifyDocs, usersController.toggleRole);
         this.users.post('/:userEmail/documents', uploader.fields([
             {name: 'profile', maxCount: 1},
             {name: 'product'},

@@ -1,0 +1,34 @@
+<div class="header-container">
+    <ul class="header-menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/profile">My profile</a></li>
+        <li><a href="/my-cart">My cart</a></li>
+        <li><a href="/admin">Admin</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</div>
+<div class="products-body">
+    <div class="products-view-container">
+        <h2>My cart🛒</h2>
+        <div class="products-grid">
+            {{#each payload.products}}
+            <div class="product-container">
+                <h3>{{this.title}}</h3>
+                <p>Price: ${{this.price}}</p>
+                <p>Quantity: {{this.quantity}}</p>
+                <p>Total: ${{this.totalPrice}}</p>
+                <div class="buttons-container">
+                    <button class="del-prod-btn" data-prod-id="{{this.id}}"
+                        data-cart-id="{{../payload.cart}}">Delete❌</button>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        <div>
+            <p>Total products in cart: {{payload.total}}</p>
+            <p>Cart total: ${{payload.price}}</p>
+            <button class="checkout-btn" data-user-email="{{payload.user.email}}" data-user-cart="{{payload.cart}}">Checkout🔥</button>
+        </div>
+    </div>
+</div>
+<script src="/js/cartBtns.js"></script>

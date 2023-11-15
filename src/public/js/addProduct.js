@@ -18,7 +18,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await response.json();
 
                 if (response.ok) {
-
+                    /* Se supone que deberia actualizar el stock en el DOM, pero se debe recargar la pagina, to-do. */
+                    const productStock = button.closest('.product-container').querySelector('.stock');
+                    productStock.textContent = `Stock: ${data.newStock}`;
+                    /* Se supone que deberia actualizar el stock en el DOM, pero se debe recargar la pagina, to-do. */
                 } else {
                     console.error("Error adding product to cart:", data.error);
                 }
@@ -26,17 +29,5 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("An unexpected error occurred:", error);
             }
         });
-    });
-});
-
-const socket = io();
-
-socket.on("products", products => {
-    products.forEach(updatedProduct => {
-        const productContainer = document.querySelector(`[data-product-id="${updatedProduct._id}"]`);
-        if (productContainer) {
-            const stockElement = productContainer.querySelector(".stock");
-            stockElement.textContent = `Stock: ${updatedProduct.stock}`;
-        }
     });
 });

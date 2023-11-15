@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { io } from "../../app.js";
 import { cartModel } from "../models/carts.model.js";
 import { productModel } from "../models/products.model.js";
 import { logger } from "../../utils/logger.js";
@@ -50,13 +49,11 @@ export default class CartsDao {
                     product.stock -= 1;
                     await product.save();
 
-                    io.emit('products', { status: 'update', payload: product });
                 } else if (cartProduct.quantity < product.stock) {
                     cartProduct.quantity += 1;
                     product.stock -= 1;
                     await product.save();
 
-                    io.emit('products', { status: 'update', payload: product });
                 } else {
                     logger.warning("There is not enough stock to add more of this product to the cart at the moment.")
                 }

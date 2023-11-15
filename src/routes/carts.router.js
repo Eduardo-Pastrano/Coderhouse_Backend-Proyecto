@@ -9,14 +9,15 @@ class cartsRouter {
         this.carts = Router();
         this.carts.get('/', CartsController.getCarts);
         this.carts.post('/', CartsController.addCarts);
-        this.carts.get('/:cartId', CartsController.getCartById);
+        this.carts.get('/cart-by-id/', CartsController.getCartById);
+        this.carts.get('/cart-details/', CartsController.getCartDetails);
         this.carts.delete('/:cartId', CartsController.deleteCart)
         this.carts.put('/:cartId', CartsController.updateCartProducts);
         this.carts.delete('/:cartId/empty', CartsController.emptyCart);
         this.carts.put("/:cartId/products/:productId", CartsController.updateProductQuantity);
         this.carts.post("/:cartId/products/:productId", CartsController.addProductToCart);
         this.carts.delete('/:cartId/products/:productId', CartsController.deleteProductFromCart);
-        this.carts.post('/:cartId/purchase', TicketsController.createTicket);
+        this.carts.post('/:user/purchase/:cartId', TicketsController.createTicket);
     }
 }
 

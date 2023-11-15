@@ -2,7 +2,7 @@ import ProductsRepository from '../repository/products.repository.js';
 import CustomError from '../repository/errors/customErrors.js';
 import eErrors from '../repository/errors/eErrors.js';
 import { addProductErrorInfo } from '../repository/errors/info.js';
-import UsersDto from '../dao/dto/users.dto.js';
+import MailController from './mail.controller.js';
 
 const repository = new ProductsRepository();
 
@@ -84,13 +84,15 @@ class ProductsController {
             if (req.session.user) {
                 const { role, email } = req.session.user;
 
-                if (role === 'admin') {
+                if (role === 'admin' || role === 'premium' && product.owner === email) {
                     await repository.deleteProduct(productId);
-                    return res.status(200).send({ status: 'Ok', message: `Product with id: ${productId}, deleted successfully.` })
-                }
+                    const subject = 'Your product has been deleted';
+                    const html = `
+                    <div> <h1>Your product has been deleted</h1> </div>
+                    <div> <h2>Your product: ${product.title}, has been deleted by an user with a role of ${role}.</h2> </div>
+                    `;
+                    await MailController.sendMail(product.owner, subject, html);
 
-                if (role === 'premium' && product.owner === email) {
-                    await repository.deleteProduct(productId);
                     return res.status(200).send({ status: 'Ok', message: `Product with id: ${productId}, deleted successfully.` })
                 }
             }

@@ -7,9 +7,8 @@ const ticketSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    user: {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: 'users'
+    userEmail: {
+        type: String,
     },
     total: Number,
 })

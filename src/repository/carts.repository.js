@@ -1,5 +1,6 @@
 import CartsDao from "../dao/mongo/carts.dao.js";
 import CartsDto from "../dao/dto/carts.dto.js";
+import ProductsDao from "../dao/mongo/products.dao.js";
 import { logger } from "../utils/logger.js";
 
 class CartsRepository {

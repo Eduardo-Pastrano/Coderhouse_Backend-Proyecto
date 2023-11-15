@@ -1,6 +1,8 @@
 import passport from "passport";
 import UserDao from "../dao/mongo/users.dao.js";
 import UserDto from "../dao/dto/users.dto.js";
+import MailController from './mail.controller.js';
+import crypto from 'crypto';
 import { createHash } from "../utils.js";
 import { logger } from "../utils/logger.js";
 import { isValidPassword } from "../utils.js";
@@ -75,6 +77,7 @@ class UsersController {
                             age: req.user.age,
                             role: req.user.role,
                             cart: req.user.cart._id,
+                            id: req.user._id,
                         }
 
                         res.send({ status: 'Success', payload: req.session.user, message: 'User logged in successfully.' });
@@ -123,6 +126,7 @@ class UsersController {
                     age: req.user.age,
                     role: 'user',
                     cart: req.user.cart,
+                    id: req.user._id,
                 };
                 res.redirect('/');
             })
@@ -147,6 +151,34 @@ class UsersController {
         } catch (error) {
             logger.error(error);
             res.status(500).send({ status: 'Error', message: error.message });
+        }
+    }
+
+    async sendLink(req, res) {
+        try {
+            const { email } = req.body;
+            const user = await UserDao.getUserByEmail(email);
+            if (!user) return res.status(404).send({ status: 'Error', message: 'User not found' });
+
+            const token = crypto.randomBytes(20).toString('hex');
+
+            req.session.resetPassword = {
+                token: token,
+                expires: Date.now() + 1200000
+            };
+
+            const link = `http://localhost:8080/resetpassword/${token}`;
+
+            const subject = 'Password reset link';
+            const html = `
+            <div> <h1>Forgot your password?</h1> </div>
+            <div> <h2>CLick or copy the following link:</h2> </div>
+            <div> <p>${link}</p> </div>
+            `;
+            await MailController.sendMail(email, subject, html);
+            res.render('checkEmail');
+        } catch (error) {
+            res.status(500).send({ status: 'Error', message: 'Internal server error.', details: error });
         }
     }
 
@@ -181,7 +213,7 @@ class UsersController {
             const newRole = user.role == 'user' ? 'premium' : 'user';
             await UserDao.updateUser(userId, { role: newRole });
 
-            res.json({ message: `User role has been updated to: ${newRole}.`, newRole: newRole});
+            res.json({ message: `User role has been updated to: ${newRole}.`, newRole: newRole });
 
         } catch (error) {
             logger.error(error);
@@ -251,41 +283,43 @@ class UsersController {
         }
     }
 
-    async autoToggle(req, res) {
-        try {
-            if (!req.isAuthenticated()) {
-                return res.status(401).send({ message: 'You must be logged in to perform this action.' });
-            }
+    /* To-do */
+    // async autoToggle(req, res) {
+    //     try {
+    //         if (!req.isAuthenticated()) {
+    //             return res.status(401).send({ message: 'You must be logged in to perform this action.' });
+    //         }
 
-            const userId = req.user._id;
-            const user = await UserDao.getUserById(userId);
+    //         const userId = req.user._id;
+    //         const user = await UserDao.getUserById(userId);
 
-            if (!user) {
-                return res.status(404).send({ message: 'User not found' })
-            }
+    //         if (!user) {
+    //             return res.status(404).send({ message: 'User not found' })
+    //         }
 
-            const newRole = user.role == 'user' ? 'premium' : 'user';
-            await UserDao.updateUser(userId, { role: newRole });
+    //         const newRole = user.role == 'user' ? 'premium' : 'user';
+    //         await UserDao.updateUser(userId, { role: newRole });
 
-            req.login(user, error => {
-                if (error) {
-                    logger.error(error);
-                    res.status(500).send(error);
-                }
-                res.json({ message: `User role updated to: ${newRole}. Was completed successfully.` });
-            });
-        } catch (error) {
-            logger.error(error);
-            res.status(500).send({ status: 'Error', message: error.message });
-        }
-    }
+    //         req.login(user, error => {
+    //             if (error) {
+    //                 logger.error(error);
+    //                 res.status(500).send(error);
+    //             }
+    //             res.json({ message: `User role updated to: ${newRole}. Was completed successfully.` });
+    //         });
+    //     } catch (error) {
+    //         logger.error(error);
+    //         res.status(500).send({ status: 'Error', message: error.message });
+    //     }
+    // }
+    /* To-do */
 
     async deleteUser(req, res) {
         try {
             const { userEmail } = req.params;
             const user = await UserDao.getUserByEmail(userEmail);
 
-            if(user && user.role === 'admin') {
+            if (user && user.role === 'admin') {
                 return res.status(400).send({ status: 'error', error: 'Admin users cannot be deleted.' });
             } else if (!user) {
                 return res.status(404).send({ status: 'error', error: 'User not found.' });

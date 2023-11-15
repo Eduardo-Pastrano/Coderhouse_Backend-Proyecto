@@ -1,11 +1,17 @@
-<a href="/"><button>Home</button></a> <a
-    href="/profile"><button>Profile</button></a> <a href="/current"><button>Current Session</button></a> <a
-    href="/logout"><button>Logout</button></a>
+<div class="header-container">
+    <ul class="header-menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/profile">My profile</a></li>
+        <li><a href="/my-cart">My cart</a></li>
+        <li><a href="/admin">Admin</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</div>
 <div>
     <h1>Check out🛒</h1>
     <p><strong>Email:</strong> {{user.email}}</p>
-    <p><strong>Cart:</strong> {{cart}}</p>
-    <p><strong>Order:</strong> {{order}}</p>
+    <p><strong>Cart ID:</strong> {{cart}}</p>
+    <p><strong>Order Number:</strong> {{order}}</p>
     <p><strong>Date:</strong> {{date}}</p> 
     <p><strong>Total:</strong> ${{total}}</p>
 </div>

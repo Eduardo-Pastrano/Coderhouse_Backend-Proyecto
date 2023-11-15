@@ -2,7 +2,7 @@
     <ul class="header-menu">
         <li><a href="/">Home</a></li>
         <li><a href="/profile">My profile</a></li>
-        <li><a href="/cart">My cart</a></li>
+        <li><a href="/my-cart">My cart</a></li>
         <li><a href="/admin">Admin</a></li>
         <li><a href="/logout">Logout</a></li>
     </ul>
@@ -17,7 +17,7 @@
                 <p>Category: {{capitalize this.category}}</p>
                 <p>Description: {{this.description}}</p>
                 <p>Price: ${{this.price}}</p>
-                <p>Stock: {{this.stock}}</p>
+                <p class="stock">Stock: {{this.stock}}</p>
                 <div>
                     <button class="add-to-cart-btn" data-product-id="{{this._id}}" data-cart-id="{{../payload.cart}}">Add to cart</button>
                 </div>

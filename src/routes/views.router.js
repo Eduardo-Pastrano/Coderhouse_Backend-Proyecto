@@ -4,7 +4,9 @@ import { userLogged } from "../middleware/userLogged.js";
 import { userOnly } from "../middleware/userOnly.js";
 import { adminOnly } from "../middleware/adminOnly.js";
 import { fetchUsers } from "../middleware/fetchUsers.js";
+import { fetchCart } from "../middleware/fetchCart.js";
 import TicketsDao from "../dao/mongo/tickets.dao.js";
+import CartsController from "../controllers/carts.controller.js";
 import { logger } from "../utils/logger.js";
 
 const ticketsDao = new TicketsDao();
@@ -109,6 +111,14 @@ views.get('/resetpassword', async (req, res) => {
     res.render('resetPassword');
 });
 
+views.get('/request-reset', async (req, res) => {
+    res.render('enterEmail');
+});
+
+views.get('/check-email', async (req, res) => {
+    res.render('checkEmail');
+});
+
 views.get('/resetpassword/:token', async (req, res) => {
     const { token } = req.params;
 
@@ -117,13 +127,6 @@ views.get('/resetpassword/:token', async (req, res) => {
     } else {
         res.render('linkExpired');
     }
-});
-
-views.get('/realtimeproducts', userLogged, async (req, res) => {
-    res.render('realTimeProducts', {
-        style: 'index.css',
-        title: 'Real Time Products',
-    })
 });
 
 views.get('/chat', userOnly, (req, res) => {
@@ -151,12 +154,27 @@ views.get('/chat', userOnly, (req, res) => {
 // });
 /* TO-DO Ruta para mostrar todos los tickets asociados a un usuario */
 
+views.get('/my-cart', fetchCart, userLogged, async (req, res) => {
+    res.render('cart', {
+        style: 'styles.css',
+        title: 'My cart🛒',
+        payload: {
+            products: req.products,
+            total: req.total,
+            price: req.price,
+            cart: req.user.cart,
+            user: req.session.user,
+        },
+    })
+});
+
 views.get('/purchase/:ticketId', userLogged, async (req, res) => {
     try {
         const { ticketId } = req.params;
         const ticketInfo = await ticketsDao.getTicketById(ticketId);
 
         res.render('purchase', {
+            style: 'styles.css',
             status: 'success',
             user: req.session.user,
             cart: req.user.cart,

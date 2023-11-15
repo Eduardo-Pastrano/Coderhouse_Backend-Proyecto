@@ -1,13 +1,14 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const deleteButton = document.querySelectorAll(".delete-user-btn");
-    const changeRoleButton = document.querySelectorAll(".role-user-btn");
+    const deleteButton = document.querySelectorAll(".del-prod-btn");
+    const checkoutButton = document.querySelectorAll(".checkout-btn");
 
     deleteButton.forEach(button => {
         button.addEventListener("click", async function () {
-            const userEmail = button.getAttribute("data-delete-user");
+            const productId = button.getAttribute("data-prod-id");
+            const cartId = button.getAttribute("data-cart-id");
 
             try {
-                const response = await fetch(`/api/sessions/delete/${userEmail}`, {
+                const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
                     method: "DELETE",
                     headers: {
                         "Content-Type": "application/json",
@@ -18,9 +19,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await response.json();
 
                 if (response.ok) {
-                    button.closest('.user-container').remove();
+                    button.closest('.product-container').remove();
                 } else {
-                    console.error("Error deleting the user:", data.error);
+                    console.error("Error deleting the product:", data.error);
                 }
             } catch (error) {
                 console.error("An unexpected error occurred:", error);
@@ -28,13 +29,14 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    changeRoleButton.forEach(button => {
-        button.addEventListener('click', async function () {
-            const userId = button.getAttribute("data-change-role");
+    checkoutButton.forEach(button => {
+        button.addEventListener('click', async function() {
+            const cartId = button.getAttribute("data-user-cart");
+            const user = button.getAttribute("data-user-email");
 
             try {
-                const response = await fetch(`/api/sessions/premium/${userId}`, {
-                    method: "GET",
+                const response = await fetch(`/api/carts/${user}/purchase/${cartId}`, {
+                    method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
@@ -43,10 +45,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await response.json();
 
                 if (response.ok) {
-                    const roleElement = button.closest('.user-container').querySelector('.role');
-                    roleElement.textContent = `Role: ${data.newRole}`;
+                    window.location.replace(`/purchase/${data.payload._id}`);
                 } else {
-                    console.error("Error changing the user's role:", data.message);
+                    console.error("Error when making the purchase:", data.message);
                 }
             } catch (error) {
                 console.error("An unexpected error occurred:", error);

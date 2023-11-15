@@ -15,10 +15,34 @@ class CartsController {
 
     async getCartById(req, res) {
         try {
-            let cartId = req.params.cartId;
+            let cartId = req.session.user.cart;
             let cart = await repository.getCartById(cartId);
             if (!cart) return res.status(404).send({ status: 'error', error: 'Cart not found.' });
             res.status(200).send(cart);
+        } catch (error) {
+            res.status(400).send({ status: 'error', error: error.message });
+        }
+    }
+
+    async getCartDetails(req, res) {
+        try {
+            const cartId = req.session.user.cart;
+            const cart = await repository.getCartById(cartId);
+            if (!cart) return res.status(404).send({ status: 'error', error: 'Cart not found.' });
+
+            const transformedProducts = await Promise.all(cart.products.map(async product => {
+                const productDetails = await productModel.findById(product._id);
+                return {
+                    title: productDetails.title,
+                    price: productDetails.price,
+                    quantity: product.quantity,
+                    totalPrice: product.quantity * productDetails.price,
+                };
+            }));
+
+            const products = await Promise.all(transformedProducts);
+            const totalProducts = products.reduce((total, product) => total + product.quantity, 0);
+            return res.json({ products, totalProducts });
         } catch (error) {
             res.status(400).send({ status: 'error', error: error.message });
         }
@@ -45,9 +69,9 @@ class CartsController {
             if (product.owner === userEmail) return res.status(400).send({ status: 'error', error: 'You cannot add your own product to the cart.' });
 
             await repository.addProductToCart(cartId, productId);
-            res.status(200).send({ status: 'Success', payload: `Product successfully added to cart: ${cartId}.` })
+            res.status(200).send({ status: 'Success', newStock: product.stock, payload: `Product successfully added to cart: ${cartId}.` })
         } catch (error) {
-            console.error(`An error occurred while adding the product to cart: ${cartId},`, error );
+            console.error(`An error occurred while adding the product to cart: ${cartId},`, error);
             res.status(500).send({ status: 'error', error: 'An unexpected error occurred while adding the product to cart.' });
         }
     }
